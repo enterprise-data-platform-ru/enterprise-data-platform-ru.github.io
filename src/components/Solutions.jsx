@@ -1,8 +1,43 @@
 import React from 'react';
-import {scenarios,principles,faq,site} from '../content/site.mjs';
-import {Icon,Logo} from './Icon.jsx';
-export function Solutions(){return <section className="section" id="solutions"><div className="container"><div className="section-heading"><div><div className="eyebrow"><span className="section-no">03</span> / СЦЕНАРИИ</div><h2>От задачи бизнеса<br/>к архитектуре.</h2></div><p>Начните с одного сценария и расширяйте платформу по мере появления новых требований к данным.</p></div><div className="scenario-grid">{scenarios.map((s,i)=><article className="scenario-card" key={s.id}><div className="mono scenario-label"><span>0{i+1} / {s.label}</span><Icon name="diagonal" size={19}/></div><h3>{s.title}</h3><p>{s.description}</p><div className="flow-strip" aria-label="Поток данных">{s.flow.map((f,j)=><React.Fragment key={f}><span>{f}</span>{j<s.flow.length-1 && <Icon name="arrow" size={15}/>}</React.Fragment>)}</div><details className="scenario-details"><summary>Что даёт этот подход</summary><ul>{s.outcomes.map(o=><li key={o}>{o}</li>)}</ul></details></article>)}</div></div></section>}
-export function Technology(){return <section className="section technology" id="technology"><div className="container"><div className="section-heading"><div><div className="eyebrow"><span className="section-no">04</span> / ИНЖЕНЕРНЫЕ ПРИНЦИПЫ</div><h2>Спроектировано<br/>для развития.</h2></div><p>Архитектурные принципы важнее конкретного вендора. Технологии выбираются под эксплуатационные и бизнес-требования.</p></div><div className="principle-grid">{principles.map(p=><article className="principle" key={p.title}><Icon name={p.icon} size={28}/><h3>{p.title}</h3><p>{p.description}</p></article>)}</div><div className="stack-title mono">ТЕХНОЛОГИЧЕСКАЯ ЭКОСИСТЕМА / ПРИМЕРЫ КОМПОНЕНТОВ</div><div className="stack-list">{['Apache Kafka','Apache Iceberg','Apache Spark','Trino','ClickHouse','Apache Airflow','Kubernetes','Argo CD','Keycloak','Open Policy Agent'].map(t=><span key={t}>{t}</span>)}</div></div></section>}
-export function FAQ(){return <section className="section faq" id="faq"><div className="container faq-grid"><div><div className="eyebrow"><span className="section-no">05</span> / FAQ</div><h2>Вопросы<br/>и ответы.</h2><p>О концепции, технологиях и вариантах внедрения платформы.</p></div><div className="faq-list">{faq.map(([q,a])=><details key={q}><summary>{q}<span aria-hidden="true"/></summary><p>{a}</p></details>)}</div></div></section>}
-export function Contact(){return <section className="contact" id="contact"><div className="container contact-inner"><div><div className="eyebrow">06 / NEXT STEP</div><h2>Построим архитектуру<br/>вокруг ваших данных.</h2><p>Определите ключевой сценарий, требования к инфраструктуре и ожидаемый результат — это основа для обсуждения платформы.</p></div><div className="contact-action">{site.email ? <a className="button button-dark" href={'mailto:'+site.email}>Написать о проекте <Icon name="diagonal" size={20}/></a> : <><span className="contact-status">Контактный канал пока не настроен.</span><a className="button button-dark" href="#architecture">Изучить архитектуру <Icon name="arrow" size={20}/></a></>}</div></div></section>}
-export function Footer(){return <footer className="footer"><div className="container"><div className="footer-main"><div><Logo/><p>Референсная архитектура корпоративной платформы данных.</p></div><nav aria-label="Навигация в подвале">{site.nav.map(([l,h])=><a key={h} href={h}>{l}</a>)}<a href="#faq">FAQ</a></nav><div className="footer-domain mono">ENTERPRISEDATAPLATFORM.RU<br/><span>REFERENCE PROJECT / v0.1</span></div></div><div className="footer-bottom"><span>© 2026 Enterprise Data Platform</span><span>Независимый архитектурный проект. Названия технологий принадлежат их правообладателям.</span></div></div></footer>}
+import {scenarios} from '../content/site.mjs';
+import {Icon} from './Icon.jsx';
+
+export default function Solutions(){
+  return <section className="section" id="solutions">
+    <div className="container">
+      <div className="section-heading">
+        <div>
+          <div className="eyebrow"><span className="section-no">03</span> / СЦЕНАРИИ</div>
+          <h2>От задачи бизнеса<br/>к архитектуре.</h2>
+        </div>
+        <p>Начните с одного сценария и расширяйте платформу по мере появления новых требований к данным.</p>
+      </div>
+      <div className="scenario-grid">
+        {scenarios.map((s, i) => (
+          <article className="scenario-card" key={s.id}>
+            <div className="mono scenario-label">
+              <span>0{i + 1} / {s.label}</span>
+              <Icon name="diagonal" size={19}/>
+            </div>
+            <h3>{s.title}</h3>
+            <p>{s.description}</p>
+            <div className="flow-strip" aria-label="Поток данных">
+              {s.flow.map((f, j) => (
+                <React.Fragment key={f}>
+                  <span>{f}</span>
+                  {j < s.flow.length - 1 && <Icon name="arrow" size={15}/>}
+                </React.Fragment>
+              ))}
+            </div>
+            <details className="scenario-details">
+              <summary>Что даёт этот подход</summary>
+              <ul>
+                {s.outcomes.map(o => <li key={o}>{o}</li>)}
+              </ul>
+            </details>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>;
+}

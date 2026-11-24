@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {site,modules,stages,scenarios,principles,faq} from '../src/content/site.mjs';
-test('domain and navigation anchors',()=>{assert.equal(site.url,'https://enterprisedataplatform.ru');const components=['Platform','Architecture','Solutions'].map(n=>readFileSync(new URL(`../src/components/${n}.jsx`,import.meta.url),'utf8')).join('\n');for(const [,href] of site.nav)assert.ok(components.includes(`id="${href.slice(1)}"`));});
+test('domain and navigation anchors',()=>{assert.equal(site.url,'https://enterprisedataplatform.ru');const components=['Platform','Architecture','Solutions','Technology'].map(n=>readFileSync(new URL(`../src/components/${n}.jsx`,import.meta.url),'utf8')).join('\n');for(const [,href] of site.nav)assert.ok(components.includes(`id="${href.slice(1)}"`));});
 test('content IDs are unique and modules complete',()=>{assert.equal(modules.length,6);assert.equal(new Set(modules.map(x=>x.id)).size,modules.length);for(const m of modules){assert.ok(m.title&&m.description&&m.icon&&m.tools.length);}});
 test('reference flows and scenarios',()=>{assert.equal(stages.length,5);assert.equal(scenarios.length,4);for(const s of scenarios){assert.ok(s.flow.length>=3&&s.outcomes.length>=2);}assert.equal(principles.length,4);assert.ok(faq.every(([q,a])=>q&&a));});
 test('contact is explicitly unconfigured or valid',()=>assert.ok(site.email===''||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(site.email)));
