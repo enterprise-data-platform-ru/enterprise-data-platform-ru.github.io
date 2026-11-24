@@ -1,0 +1,4 @@
+import React from 'react';
+import {modules} from '../content/site.mjs';
+import {Icon} from './Icon.jsx';
+export default function Platform(){return <section className="section" id="platform"><div className="container"><div className="section-heading"><div><div className="eyebrow"><span className="section-no">01</span> / ПЛАТФОРМА</div><h2>Одна архитектура.<br/>Шесть направлений.</h2></div><p>Модульный подход к корпоративным данным. Выбирайте компоненты под задачи бизнеса, не привязываясь к одному монолитному продукту.</p></div><div className="module-grid">{modules.map(m=><article className="module-card" id={m.id} key={m.id}><div className="module-top"><span className="module-icon"><Icon name={m.icon} size={28}/></span><span className="mono card-code">EDP / {m.code}</span></div><h3>{m.title}</h3><p>{m.description}</p><div className="tags">{m.tools.map(t=><span key={t}>{t}</span>)}</div></article>)}</div></div></section>}
