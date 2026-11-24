@@ -2,7 +2,7 @@ export const site = {
   name: 'Enterprise Data Platform', shortName: 'EDP', url: 'https://enterprisedataplatform.ru',
   description: 'Референсная архитектура корпоративной платформы данных: Lakehouse, потоковая обработка, аналитика, Data Governance и эксплуатация на Kubernetes.',
   // Укажите подтверждённый рабочий адрес. До этого контактная форма не активируется.
-  email: '',
+  email: 'contact@enterprisedataplatform.ru',
   nav: [ ['Платформа', '#platform'], ['Архитектура', '#architecture'], ['Решения', '#solutions'], ['Технологии', '#technology'] ],
 };
 export const modules = [
