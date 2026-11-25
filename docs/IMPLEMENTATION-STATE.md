@@ -102,4 +102,11 @@
 - Проверки: сборка `''` и `/edp-test` + `check:export` — OK; DOM `aria-current="page"` на `docs/index.html` = 2, на `index.html` = 0; якоря `/#platform…` и `href=/docs/|/edp-test/docs/`. `git diff --check` — чисто. `git push` не выполнялся.
 - Коммит по плану (владельцем): `fix: make header navigation work across pages`.
 
-Следующая: **A03 — Footer и логотип** (`src/components/Footer.jsx`, `Icon.jsx` — только `Logo`).
+Следующая выполнена: **A03 — Footer и логотип (завершена)**.
+- `src/components/Icon.jsx` (только `Logo`): логотип ведёт на главную через `linkHref('/')` (был локальный `#top`); доступное имя обновлено на «Enterprise Data Platform — на главную». SVG и `Icon` не тронуты.
+- `src/components/Footer.jsx`: навигация и FAQ переведены на `linkHref` (были инлайновые `${basePath}${h}` и `href="#faq"`); `basePath`-импорт убран.
+- Тест `tests/footer.test.mjs` (новый, node `--test`): контракт навигации подвала, якоря FAQ и home-цели бренда. Итого 19/19 (было 16).
+- Проверки: сборка `''` и `/edp-test` + `check:export` — OK; DOM `class="brand" href="/"|/edp-test/`, FAQ `href="/#faq"|/edp-test/#faq`, `#top` больше нет, footer `href="/edp-test/docs/"`. `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `fix: correct footer and brand links`.
+
+Следующая: **A04 — SEO и доступность страницы документации** (`src/app/docs/page.jsx`, `sitemap.js`, при необходимости `layout.jsx`).

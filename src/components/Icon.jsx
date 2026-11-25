@@ -1,4 +1,5 @@
 import React from 'react';
+import {linkHref} from '../lib/paths.mjs';
 const paths = {
   stream: <><path d="M3 6h5l4 6h9M3 12h5l4-6h9M3 18h5l4-6"/><path d="m18 3 3 3-3 3m0 0 3 3-3 3"/></>,
   layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,
@@ -12,4 +13,4 @@ const paths = {
   menu: <path d="M4 7h16M4 12h16M4 17h16"/>,
 };
 export function Icon({name, size=24, className}) { return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] || paths.layers}</svg>; }
-export function Logo(){return <a className="brand" href="#top" aria-label="Enterprise Data Platform — начало страницы"><svg width="38" height="38" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3 37 12v16L20 37 3 28V12L20 3Z" stroke="currentColor" strokeWidth="2"/><path d="m3 12 17 9 17-9M20 21v16M11.5 7.5l17 9v7.5L20 29" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/></svg><span>enterprise<span className="brand-sub">data platform<span className="brand-dot">.</span></span></span></a>}
+export function Logo(){return <a className="brand" href={linkHref('/')} aria-label="Enterprise Data Platform — на главную"><svg width="38" height="38" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3 37 12v16L20 37 3 28V12L20 3Z" stroke="currentColor" strokeWidth="2"/><path d="m3 12 17 9 17-9M20 21v16M11.5 7.5l17 9v7.5L20 29" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/></svg><span>enterprise<span className="brand-sub">data platform<span className="brand-dot">.</span></span></span></a>}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {site} from '../content/site.mjs';
-import {basePath} from '../lib/paths.mjs';
+import {linkHref} from '../lib/paths.mjs';
 import {Logo} from './Icon.jsx';
 
 export default function Footer(){
@@ -12,8 +12,8 @@ export default function Footer(){
           <p>Референсная архитектура корпоративной платформы данных.</p>
         </div>
         <nav aria-label="Навигация в подвале">
-          {site.nav.map(([l, h]) => <a key={h} href={h.startsWith('#') ? h : `${basePath}${h}`}>{l}</a>)}
-          <a href="#faq">FAQ</a>
+          {site.nav.map(([l, h]) => <a key={h} href={linkHref(h)}>{l}</a>)}
+          <a href={linkHref('#faq')}>FAQ</a>
         </nav>
         <div className="footer-domain mono">ENTERPRISEDATAPLATFORM.RU<br/><span>REFERENCE PROJECT / v0.1</span></div>
       </div>
