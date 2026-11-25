@@ -280,3 +280,59 @@
   .docs-start-link {
     display:block;
     text-align:center}}
+
+/* FIX-03: каталог (/docs/) внутри docs-article — секции тянутся на всю
+   ширину main, компенсируя padding статьи. */
+.docs-article > .docs-catalog {
+  display:contents}
+
+/* FIX-03: каталог — сетка карточек, статусы, ссылки */
+.docs-cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:16px;
+  margin-top:20px}
+.docs-card--published {
+  cursor:pointer;
+  transition:border-color .15s}
+.docs-card--published:hover {
+  border-color:var(--lime)}
+.docs-card-tag {
+  display:inline-block;
+  font-size:.7rem;
+  font-family:var(--font-mono);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:8px}
+.docs-card-status {
+  display:inline-block;
+  font-size:.7rem;
+  font-family:var(--font-mono);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-top:8px}
+.docs-list-intro {
+  color:var(--ink-soft);
+  font-size:1rem;
+  line-height:1.6}
+.docs-start-empty {
+  color:var(--ink-mute);
+  font-style:italic}
+.docs-start-link {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--surface);
+  transition:border-color .15s}
+.docs-start-link:hover {
+  border-color:var(--lime)}
+.docs-start-link .arrow {
+  color:var(--lime)}
+.arrow {
+  color:var(--ink-mute);
+  font-size:1.1rem}
