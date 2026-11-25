@@ -1,0 +1,46 @@
+{
+  "brand": "Enterprise Data Platform",
+  "version": "1.0",
+  "colors": {
+    "ink": "#12232B",
+    "muted": "#52656C",
+    "paper": "#F5F7F3",
+    "white": "#FFFFFF",
+    "line": "#DCE4DF",
+    "dark": "#101C24",
+    "dark2": "#182831",
+    "lime": "#B7F46A",
+    "green": "#24594A",
+    "soft": "#B5C6C3",
+    "darkline": "#45645A"
+  },
+  "fonts": {
+    "primary": "Arial, Helvetica, sans-serif",
+    "mono": "Consolas, Menlo, monospace"
+  },
+  "presentation": {
+    "ratio": "16:9",
+    "margin_in": 0.6,
+    "title_pt": [
+      36,
+      48
+    ],
+    "heading_pt": [
+      28,
+      36
+    ],
+    "body_pt": [
+      18,
+      24
+    ]
+  },
+  "document": {
+    "paper": "A4",
+    "margin_mm": 20,
+    "body_pt": [
+      11,
+      12
+    ],
+    "line_spacing": 1.15
+  }
+}

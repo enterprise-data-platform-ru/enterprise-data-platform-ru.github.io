@@ -13,9 +13,9 @@ Respond in Russian. Write code identifiers, technical comments, and commit messa
 ## Architecture
 
 - Preserve static export (`output: 'export'`).
-- Use Server Components by default.
+- Use Server Components by default, rendered at build time.
 - Use Client Components only when necessary.
-- No SSR, Server Actions, runtime APIs, or dynamic ISR.
+- No request-time SSR, Server Actions, runtime APIs, or ISR.
 - No new dependencies or frameworks without approval.
 - Reuse existing components and utilities.
 - Keep changes minimal and within task scope.
@@ -74,29 +74,41 @@ Update implementation status only when relevant work has been completed and veri
 - `src/app/` — pages and layouts.
 - `src/components/` — reusable components.
 - `src/content/site.mjs` — structured content.
-- `src/app/globals.css` — styles and design tokens.
+- `src/app/globals.css` — website styles and CSS design tokens.
 - `src/lib/` — shared utilities.
+- `design/` — local copies of brand guidelines and design tokens.
 - `public/` — static assets.
 - `tests/` — tests.
 - `scripts/` — build and validation scripts.
 
 Inspect existing implementation before creating new files.
 
-## Design
+## Brand and Design System
+
+Follow the EDP brand standards:
+
+- `design/BRAND.md` — brand guidelines and visual identity.
+- `design/brand-tokens.json` — canonical design values in machine-readable form.
+- `src/app/globals.css` — website implementation of design tokens.
+- Intended upstream source: https://github.com/enterprise-data-platform-ru/edp-brand.
+
+Read the local brand files before changing UI, CSS, typography, colors, logos, visual assets, or document styling. Do not load them for unrelated tasks.
 
 Preserve the existing visual identity:
 
-- Graphite background and lime accent.
-- Light content sections.
+- Graphite background, lime accent, and light content sections.
+- Approved brand colors, typography, and logo variants.
 - System sans-serif and monospace accents.
-- Existing CSS design tokens.
+- Existing CSS custom properties and reusable components.
 - Consistent typography, spacing, and components.
 - Responsive layouts from 360px to 1440px.
 - Semantic HTML and keyboard accessibility.
 
-Documentation must share the website design system.
+Website documentation must share the website design system. Presentations and exported documents, when explicitly requested, must follow the applicable brand guidelines.
 
-Do not introduce external fonts, scripts, or trackers without approval.
+Reuse existing CSS tokens instead of hardcoding brand colors and other shared values. Preserve logo proportions and approved variants. Do not introduce new colors, fonts, visual patterns, external scripts, or trackers without approval.
+
+Treat `design/` as a read-only brand reference unless the task explicitly authorizes a brand update. Do not automatically fetch or synchronize upstream files. If a brand file is missing or conflicts with the website implementation, report the issue; do not invent standards or silently redesign the website. Continue unrelated work if possible.
 
 ## Deployment
 
@@ -114,7 +126,7 @@ Do not introduce external fonts, scripts, or trackers without approval.
 
 1. Check `git status`.
 2. Identify task scope and relevant files.
-3. Read relevant documentation and skills.
+3. Read relevant documentation, skills, and brand references when applicable.
 4. Make a short implementation plan.
 5. Apply minimal changes.
 6. Run relevant validation.
@@ -126,7 +138,7 @@ Do not introduce external fonts, scripts, or trackers without approval.
 
 Run relevant checks:
 
-```
+```sh
 npm test
 npm run build
 npm run check:export
@@ -134,7 +146,7 @@ git diff --check
 git status --short
 ```
 
-For UI changes, verify desktop/mobile layouts, navigation, accessibility, and visual consistency.
+For UI changes, verify desktop/mobile layouts, navigation, accessibility, visual consistency, and compliance with the local brand standards.
 
 Never claim that an unexecuted check passed. Do not disable tests to bypass failures.
 
