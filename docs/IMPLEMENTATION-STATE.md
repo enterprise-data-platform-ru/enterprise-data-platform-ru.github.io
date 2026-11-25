@@ -170,4 +170,6 @@
 - Проверки: `npm test` 34/34; сборка `''` и `/edp-test` + `check:export` — OK (83 local asset refs / 6 HTML файлов в обоих режимах). Прямой URL после экспорта: `out/docs/overview/index.html` присутствует, h1 «Обзор платформы». Sitemap в режиме `/edp-test` ссылается только на production-домен (утечки `/edp-test` нет). Восстановлен production-экспорт (`'' build` + `check:export`, basePath=/). `git diff --check` — чисто. `git push` не выполнялся.
 - Коммит по плану (владельцем): `feat: define static documentation route registry`.
 
-Следующая задача: **B04 — Общий layout документации** (зависимость: B03).
+- B04 (этого коммита) завершён: общий layout документации с тремя областями (sidebar / статья / оглавление), переиспользованы Header/Footer, убрано дублирование.
+
+Следующая задача: **B05 — Sidebar и активный маршрут** (зависимость: B04 готова).

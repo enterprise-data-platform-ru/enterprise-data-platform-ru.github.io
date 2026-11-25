@@ -1,6 +1,4 @@
 import React from 'react';
-import Header from '../../components/Header.jsx';
-import Footer from '../../components/Footer.jsx';
 import {docs} from '../../content/site.mjs';
 import {getPublishedDocs, docPath} from '../../content/docs/navigation.mjs';
 import {linkHref} from '../../lib/paths.mjs';
@@ -13,10 +11,7 @@ export const metadata = {
 
 export default function DocsPage() {
   return (
-    <>
-      <a className="skip-link" href="#main">К содержимому</a>
-      <Header activeSection="/docs/" />
-      <main id="main" className="docs-page">
+    <main id="main" className="docs-page">
         <section className="docs-hero">
           <div className="container">
             <nav className="docs-breadcrumb" aria-label="Хлебные крошки">
@@ -80,8 +75,6 @@ export default function DocsPage() {
             </p>
           </div>
         </section>
-      </main>
-      <Footer />
-    </>
+    </main>
   );
 }

@@ -938,3 +938,71 @@ img {
   text-decoration:none}
 .docs-published-list a:hover {
   text-decoration:underline}
+.docs-shell {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  max-width:1440px;
+  margin:0 auto}
+.docs-sidebar {
+  padding:24px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--paper)}
+.docs-nav-title {
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700;
+  margin:0 0 10px}
+.docs-nav-list {
+  list-style:none;
+  margin:0;
+  padding:0}
+.docs-nav-list li {
+  margin:4px 0}
+.docs-nav-list a {
+  color:var(--green);
+  text-decoration:none;
+  font-size:14px}
+.docs-nav-list a:hover {
+  text-decoration:underline}
+.docs-article {
+  padding:32px 20px 64px;
+  min-width:0;
+  overflow-wrap:break-word}
+.docs-article pre {
+  overflow-x:auto;
+  max-width:100%}
+.docs-toc {
+  display:none;
+  padding:24px 18px;
+  border-left:1px solid var(--line)}
+.docs-toc h2 {
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700;
+  margin:0 0 10px}
+.docs-toc ul {
+  list-style:none;
+  margin:0;
+  padding:0}
+.docs-toc li {
+  margin:4px 0}
+.docs-toc a {
+  color:var(--green);
+  text-decoration:none;
+  font-size:13px}
+.docs-toc a:hover {
+  text-decoration:underline}
+@media(min-width:820px) {
+  .docs-shell {
+    grid-template-columns:220px minmax(0,1fr)}
+  .docs-sidebar {
+    border-bottom:0;
+    border-right:1px solid var(--line);
+    align-self:start}
+  .docs-article {
+    max-width:none}}
+@media(min-width:1100px) {
+  .docs-shell {
+    grid-template-columns:220px minmax(0,1fr) 180px}
+  .docs-toc {
+    display:block}}
