@@ -117,4 +117,15 @@
 - Проверки: `npm test` 22/22; сборка `''` и `/edp-test` + `check:export` — OK (5 local asset refs); DOM `out/docs/index.html`: `skip-link` + `main id="main"` присутствуют, `class="docs-breadcrumb"` с `href="/"`|`/edp-test/` на «Главная», контакт `href="/#contact"`|`/edp-test/#contact` «контактный блок», слова «контактную форму» отсутствуют (0), canonical `https://enterprisedataplatform.ru/docs/` в обоих режимах, `sitemap.xml` содержит `/docs/`, структура заголовков: 1×h1 + 4×h2. `git diff --check` — чисто. `git push` не выполнялся.
 - Коммит по плану (владельцем): `fix: improve documentation SEO and accessibility`.
 
-Следующая: **A05 — Проверка статического экспорта всех страниц** (`scripts/check-export.mjs`, при необходимости `tests/export.test.mjs`).
+Следующая выполнена: **A05 — Проверка статического экспорта всех страниц (завершена)**.
+- `scripts/check-export.mjs` переписан: перебирает все HTML-файлы в `out/` (5 файлов: `index.html`, `404.html`, `404/index.html`, `docs/index.html`, `_not-found/index.html`), извлекает `href`/`src` из каждого (после удаления `<script>` блоков), проверяет:
+  - обязательные файлы (`index.html`, `404.html`, `platform.svg`, `favicon.svg`, `og.png`, `robots.txt`, `sitemap.xml`, `docs/index.html`);
+  - корректность `basePath` (при непустом basePath все root-relative ссылки должны начинаться с `basePath/`);
+  - существование целевого файла (индексные маршруты → `index.html`);
+  - наличие якоря `id="..."` в целевой странице;
+  - пропуск внешних URL, `mailto:`, `tel:`, `data:`, `javascript:`, `vbscript:`, protocol-relative `//host`;
+  - `sitemap.xml` содержит root-URL и `/docs/`-URL.
+- `tests/export.test.mjs` (новый, 8 тестов, node `--test`): положительный сценарий (root и nested basePath), отклонение при отсутствии страницы, отсутствии якоря, отсутствии файла, отсутствии `docs/index.html`, отсутствии `/docs/` в sitemap, отсутствии basePath.
+- Итого 30/30 тестов (было 22).
+- Проверки: `npm test` 30/30; `npm run build` + `check:export` (basePath=``) — OK, 59 asset refs / 5 HTML файлов; `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `test: validate links across static website export`.
