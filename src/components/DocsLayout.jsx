@@ -1,22 +1,34 @@
 import React from 'react';
 import DocsSidebar from './DocsSidebar.jsx';
+import DocsBreadcrumb from './DocsBreadcrumb.jsx';
+import DocsArticleNav from './DocsArticleNav.jsx';
 import DocsToc from './DocsToc.jsx';
 
-// FIX-03: единый layout-обёртка для всех страниц документации.
-// Рендерит 3-колоночную сетку docs-shell: боковая навигация (B05),
-// основной контент и оглавление (B06). Используется всеми сегментами
-// /docs/, чтобы структура JSX была идентична.
-export default function DocsLayout({children, currentSlug = '', mainClass = 'docs-article'}) {
+export default function DocsLayout({children, currentSlug = '', variant = 'article'}) {
+  const isIndex = variant === 'index';
   return (
-    <div className="docs-shell">
+    <div className={`docs-shell docs-shell--${isIndex ? 'index' : 'article'}`}>
       <DocsSidebar currentSlug={currentSlug} />
-      <main id="main" className={mainClass}>
-        {children}
+      <main id="main" className="docs-main">
+        {isIndex ? (
+          <div className="docs-catalog">
+            <DocsBreadcrumb />
+            {children}
+          </div>
+        ) : (
+          <div className="docs-article">
+            <DocsBreadcrumb currentSlug={currentSlug} />
+            <article id="docs-content">{children}</article>
+            <DocsArticleNav currentSlug={currentSlug} />
+          </div>
+        )}
       </main>
-      <aside className="docs-toc" aria-label="Оглавление">
-        <h2>На этой странице</h2>
-        <DocsToc scopeId="main" />
-      </aside>
+      {!isIndex && (
+        <aside className="docs-toc" aria-label="Оглавление">
+          <h2>На этой странице</h2>
+          <DocsToc scopeId="docs-content" />
+        </aside>
+      )}
     </div>
   );
 }

@@ -183,7 +183,7 @@ test('catalog cards only link when published; future cards have no route', () =>
   for (const card of publishedCards) {
     const href = linkHref(docPath(card.slug), '/docs-base');
     assert.ok(href.startsWith('/docs-base/docs/'), `published card ${card.slug} resolves under basePath`);
-    assert.ok(href.endsWith('/docs/'), `published card ${card.slug} ends with slash`);
+    assert.equal(href, `/docs-base/docs/${card.slug}/`, `published card ${card.slug} resolves to its article`);
   }
   // Future cards must not produce a link. We assert the contract directly:
   // any non-published card would throw if routed, proving no dead link exists.
