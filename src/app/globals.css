@@ -848,3 +848,59 @@ img {
   .scenario-panel {
     padding:20px 16px}
 }
+
+/* ── Docs page ── */
+.docs-page {
+  padding-top:0}
+.docs-hero {
+  padding:80px 0 40px;
+  background:var(--paper);
+  border-bottom:1px solid var(--line)}
+.docs-hero h1 {
+  font-size:42px;
+  margin:8px 0 12px}
+.docs-hero p {
+  font-size:16px;
+  max-width:560px}
+.docs-list {
+  padding:48px 0}
+.docs-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px}
+.docs-card {
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px;
+  background:var(--white)}
+.docs-card-head {
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin-bottom:12px}
+.docs-code {
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700}
+.docs-card h2 {
+  font-size:18px;
+  margin:0}
+.docs-card p {
+  font-size:14px;
+  margin-bottom:16px}
+.docs-topics {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px}
+.docs-topic {
+  font-size:10px;
+  padding:4px 8px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  color:var(--muted)}
+.docs-note {
+  padding:32px 0 64px}
+.docs-note p {
+  font-size:13px;
+  color:var(--muted);
+  max-width:520px}
