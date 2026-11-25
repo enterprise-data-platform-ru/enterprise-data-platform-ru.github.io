@@ -129,3 +129,35 @@
 - Итого 30/30 тестов (было 22).
 - Проверки: `npm test` 30/30; `npm run build` + `check:export` (basePath=``) — OK, 59 asset refs / 5 HTML файлов; `git diff --check` — чисто. `git push` не выполнялся.
 - Коммит по плану (владельцем): `test: validate links across static website export`.
+
+Следующая выполнена: **A06 — Контрольная точка навигации (автопроверки пройдены, ручная проверка отложена)**. Контрольная точка, изменения кода нет.
+- Автоматические проверки (в этой сессии):
+  - `npm test` — 30/30 pass.
+  - `NEXT_PUBLIC_BASE_PATH='' build` + `check:export` — OK, 59 local asset refs / 5 HTML файлов, basePath=/.
+  - `NEXT_PUBLIC_BASE_PATH='/edp-test' build` + `check:export` — OK, 59 local asset refs / 5 HTML файлов, basePath=/edp-test (отдельная проверка, как требует A06).
+  - Восстановление production-экспорта: `NEXT_PUBLIC_BASE_PATH='' build` + `check:export` — OK, basePath=/ (текущий `out/`).
+  - `git diff --check` — чисто; отслеживаемых изменений в `git status` нет.
+- Ручная проверка в браузере (главная, `/docs/`, логотип, пункты меню, CTA, Footer при ~390 и 1440 px; прямая загрузка и обновление `/docs/`): **NOT RUN** — браузер недоступен в этой среде; не подменяется статическим анализом. Отложена владельцу.
+- Приёмка A06: обе сборки и проверки экспорта пройдены; ручная проверка явно отложена владельцу. Публикация — отдельный PR/коммитный набор только после ручного подтверждения владельцем. `git push` не выполнялся.
+- Коммит по плану (владельцем): отдельный набор без собственного commit message из плана (точка — релиз-маркер); при необходимости: `chore: navigation checkpoint (A06)`.
+
+Следующая выполнена: **B01 — ADR выбора движка документации (завершена)**.
+- Создан `docs/adr/0001-documentation-engine.md`: сравнение Nextra и Next.js + локальный MDX; рекомендация — вариант B (Next.js + MDX) при условии успешного PoC; условия отказа и план B02 описаны.
+- Пакеты не установлены, исходный код сайта не изменён. Совместимость с Next.js 16 / React 19 / `output: 'export'` **не проверялась** (нет доступа к сети) — перенесено в B02.
+- Подтверждение владельца — ожидается (чек-лист в конце ADR).
+- Проверки: `npm test` 30/30; `build` + `check:export` (basePath=``) — OK, 59 local asset refs / 5 HTML файлов; `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `docs: record documentation engine decision`.
+
+Следующая задача: **B02 — Изолированный PoC движка (завершена)**.
+- Ветка: `feat/docs-poc` (от `main`).
+- Установлены `@next/mdx@16.4.6` и `@mdx-js/react@3.1.1`; `@mdx-js/loader` **не требуется** — используется экспериментальный `mdxRs` (Rust-компилятор) через `experimental.mdxRs: true` в `next.config.mjs`.
+- `next.config.mjs`: добавлен `withMDX` из `@next/mdx`, `pageExtensions` с `md`/`mdx`, `experimental.mdxRs: true`.
+- `mdx-components.js` (корень проекта): экспорт `useMDXComponents()`.
+- `src/app/docs/poc/page.mdx`: тестовая страница (H1/H2/H3, python-блок кода, список, **жирный**/_курсив_, относительная ссылка `../`, blockquote, frontmatter `title`/`description`).
+- **Критерий стоп — пройден**: новых транзитивных зависимостей **2** (`csstype`, `source-map`), предел — 10. Вариант с `@mdx-js/loader` (103 пакета) отклонён.
+- `npm test` — 30/30. Сборка `''` и `/edp-test` + `check:export` — OK (62 local asset refs / 6 HTML). `git diff --check` — чисто.
+- `out/docs/poc/index.html`: 6×h[123], 1×pre/code, 6×li, 1×a, 1×blockquote. `main` не изменён.
+- `git push` не выполнялся. Коммит по плану (владельцем): `feat: prototype static MDX documentation`.
+- **Блокер**: подтверждение ADR-решения владельцем (чек-лист в `docs/adr/0001-documentation-engine.md`) — не получено.
+
+Следующая задача: **B03 — реестр документации и маршруты** (зависимость: B02).
