@@ -4,7 +4,9 @@ import {basePath} from '../src/lib/paths.mjs';
 import {site} from '../src/content/site.mjs';
 
 const root = resolve(process.argv[2] || 'out');
-const html = readFileSync(resolve(root, 'index.html'), 'utf8');
+const rawHtml = readFileSync(resolve(root, 'index.html'), 'utf8');
+// Remove <script> content to avoid matching serialized RSC data with raw paths
+const html = rawHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
 function verify(file) {
   const absolute = resolve(root, file);
   if (!absolute.startsWith(root + sep) || !statSync(absolute).isFile()) throw new Error(`Missing file: ${file}`);
