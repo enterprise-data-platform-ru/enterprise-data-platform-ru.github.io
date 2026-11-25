@@ -109,4 +109,12 @@
 - Проверки: сборка `''` и `/edp-test` + `check:export` — OK; DOM `class="brand" href="/"|/edp-test/`, FAQ `href="/#faq"|/edp-test/#faq`, `#top` больше нет, footer `href="/edp-test/docs/"`. `git diff --check` — чисто. `git push` не выполнялся.
 - Коммит по плану (владельцем): `fix: correct footer and brand links`.
 
-Следующая: **A04 — SEO и доступность страницы документации** (`src/app/docs/page.jsx`, `sitemap.js`, при необходимости `layout.jsx`).
+Следующая выполнена: **A04 — SEO и доступность страницы документации (завершена)**.
+- `src/app/docs/page.jsx`: добавлен skip-link (`<a class="skip-link" href="#main">К содержимому</a>`) и `id="main"` на `<main>`; добавлена компактная навигационная цепочка «Главная / Документация» (`nav.docs-breadcrumb`, `linkHref('/')` для «Главная», `aria-current="page"` на текущем), без несуществующих маршрутов; упоминание «контактной формы» заменено ссылкой на контактный блок (`linkHref('#contact')` → `/#contact` / `/edp-test/#contact`), без утверждения о подтверждённом адресе. Canonical и метаданные не менялись — уже ссылаются на production-домен (`metadataBase = site.url`, `alternates.canonical = '/docs/'` → `https://enterprisedataplatform.ru/docs/`), проверено для обоих режимов.
+- `src/app/sitemap.js`: добавлен маршрут `/docs/` (priority 0.8); root-маршрут сохранён. Локации — production-домен, тестовый путь не утекает.
+- `src/app/globals.css`: минимальные стили `.docs-breadcrumb` (без изменения существующего дизайна).
+- Тест `tests/docs.test.mjs` (новый, node `--test`): breadcrumb-ссылка «Главная», ссылка контакта `#contact` (оба basePath) и покрытие sitemap. Итого 22/22 (было 19).
+- Проверки: `npm test` 22/22; сборка `''` и `/edp-test` + `check:export` — OK (5 local asset refs); DOM `out/docs/index.html`: `skip-link` + `main id="main"` присутствуют, `class="docs-breadcrumb"` с `href="/"`|`/edp-test/` на «Главная», контакт `href="/#contact"`|`/edp-test/#contact` «контактный блок», слова «контактную форму» отсутствуют (0), canonical `https://enterprisedataplatform.ru/docs/` в обоих режимах, `sitemap.xml` содержит `/docs/`, структура заголовков: 1×h1 + 4×h2. `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `fix: improve documentation SEO and accessibility`.
+
+Следующая: **A05 — Проверка статического экспорта всех страниц** (`scripts/check-export.mjs`, при необходимости `tests/export.test.mjs`).

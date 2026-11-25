@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../../components/Header.jsx';
 import Footer from '../../components/Footer.jsx';
 import {docs} from '../../content/site.mjs';
+import {linkHref} from '../../lib/paths.mjs';
 
 export const metadata = {
   title: 'Документация — Enterprise Data Platform',
@@ -12,10 +13,16 @@ export const metadata = {
 export default function DocsPage() {
   return (
     <>
+      <a className="skip-link" href="#main">К содержимому</a>
       <Header activeSection="/docs/" />
-      <main className="docs-page">
+      <main id="main" className="docs-page">
         <section className="docs-hero">
           <div className="container">
+            <nav className="docs-breadcrumb" aria-label="Хлебные крошки">
+              <a href={linkHref('/')}>Главная</a>
+              <span aria-hidden="true">/</span>
+              <span aria-current="page">Документация</span>
+            </nav>
             <div className="eyebrow">
               <span className="section-no">DOCS</span> / REFERENCE MATERIAL
             </div>
@@ -53,8 +60,8 @@ export default function DocsPage() {
           <div className="container">
             <p>
               Разделы находятся в разработке. По мере готовности материалы
-              будут публиковаться здесь. Для текущих вопросов используйте
-              контактную форму на главной странице.
+              будут публиковаться здесь. Для текущих вопросов используйте{' '}
+              <a href={linkHref('#contact')}>контактный блок на главной странице</a>.
             </p>
           </div>
         </section>

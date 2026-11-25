@@ -862,6 +862,19 @@ img {
 .docs-hero p {
   font-size:16px;
   max-width:560px}
+.docs-breadcrumb {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  margin-bottom:18px}
+.docs-breadcrumb a {
+  color:var(--green);
+  text-decoration:none}
+.docs-breadcrumb a:hover {
+  text-decoration:underline}
+.docs-breadcrumb span[aria-current] {
+  color:var(--muted)}
 .docs-list {
   padding:48px 0}
 .docs-grid {
