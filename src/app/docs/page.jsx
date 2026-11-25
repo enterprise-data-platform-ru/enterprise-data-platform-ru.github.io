@@ -12,7 +12,7 @@ export const metadata = {
 export default function DocsPage() {
   return (
     <>
-      <Header />
+      <Header activeSection="/docs/" />
       <main className="docs-page">
         <section className="docs-hero">
           <div className="container">

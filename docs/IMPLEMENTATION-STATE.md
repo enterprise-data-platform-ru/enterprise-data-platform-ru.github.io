@@ -94,7 +94,12 @@
 
 **A01 — завершена.** Добавлен `linkHref` в `src/lib/paths.mjs` и тесты в `tests/paths.test.mjs`; контракт `normalizeBasePath`/`basePath`/`assetPath` сохранён, компоненты не изменены, 13/13 тестов, сборки `''` и `/edp-test` и `check:export` проходят. Коммит по плану (выполняется владельцем): `fix: centralize cross-page navigation paths`. В этой сессии коммит не создавался, `git push` не выполнялся.
 
-Следующая: **A02 — Header и мобильное меню**.
-- Читать/изменять: `src/components/Header.jsx`, при необходимости фрагмент `src/content/site.mjs` и целевой тест.
-- Перевести пункты десктопной и мобильной навигации на `linkHref` A01 (сейчас используется инлайновое `${basePath}${h}`).
-- **A02 в этой сессии не начинался.**
+Следующая выполнена: **A02 — Header и мобильное меню (завершена)**.
+- `src/components/Header.jsx`: все пункты десктопной и мобильной навигации и CTA «Обсудить проект» через `linkHref` (A01). CTA ведёт на глобальный якорь главной `#contact` → `/#contact` / `/edp/#contact`.
+- Добавлен простой статический проп `activeSection` (совпадает с raw `href` пункта): активному пункту ставится `aria-current="page"`. Header остался Server Component; `details/summary` для мобильного меню сохранено.
+- `src/app/docs/page.jsx`: передан `activeSection="/docs/"` — на `/docs/` подсвечивается пункт «Документация» (десктоп + мобильный).
+- Тест `tests/header.test.mjs` (новый, node `--test`): контракт навигации и подсветки. Итого 16/16 (было 13).
+- Проверки: сборка `''` и `/edp-test` + `check:export` — OK; DOM `aria-current="page"` на `docs/index.html` = 2, на `index.html` = 0; якоря `/#platform…` и `href=/docs/|/edp-test/docs/`. `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `fix: make header navigation work across pages`.
+
+Следующая: **A03 — Footer и логотип** (`src/components/Footer.jsx`, `Icon.jsx` — только `Logo`).
