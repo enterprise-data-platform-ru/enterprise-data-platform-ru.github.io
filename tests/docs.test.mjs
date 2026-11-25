@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {linkHref} from '../src/lib/paths.mjs';
 import sitemap from '../src/app/sitemap.js';
@@ -208,4 +209,47 @@ test('getGettingStarted resolves to a real published article', () => {
   const href = linkHref(docPath(start.slug), '/docs-base');
   assert.ok(href.startsWith('/docs-base/docs/'), 'getting-started links under basePath');
   assert.equal(getSectionStatus(start.slug), 'published');
+});
+
+// FIX-01 documentation article metadata: YAML frontmatter in a .mdx file is not
+// parsed by the build pipeline (no gray-matter / frontmatter mode), so it
+// rendered as visible text in the article body. Metadata moved to the segment
+// layout's standard Next.js `export const metadata`, and the body keeps a single
+// H1 so the page has exactly one top-level heading.
+const overviewMdx = readFileSync(new URL('../src/app/docs/overview/page.mdx', import.meta.url), 'utf8');
+const overviewLayout = readFileSync(new URL('../src/app/docs/overview/layout.jsx', import.meta.url), 'utf8');
+
+test('overview article has no leading YAML frontmatter block', () => {
+  // A leading "---" block would be rendered as visible content (no frontmatter parser).
+  assert.equal(
+    overviewMdx.trimStart().startsWith('---'),
+    false,
+    'overview .mdx must not start with a YAML frontmatter block',
+  );
+});
+
+test('overview article does not leak service metadata into visible content', () => {
+  assert.ok(!/^\s*title\s*:/.test(overviewMdx), 'no title: line in visible article content');
+  assert.ok(!/^\s*description\s*:/.test(overviewMdx), 'no description: line in visible article content');
+});
+
+test('overview layout exposes Next.js metadata (title, description, canonical)', () => {
+  assert.match(overviewLayout, /export\s+const\s+metadata\b/);
+  assert.match(overviewLayout, /title\s*:\s*'Обзор платформы/);
+  assert.match(overviewLayout, /description\s*:/);
+  assert.match(overviewLayout, /canonical\s*:\s*'https:\/\/?enterprisedataplatform\.ru\/docs\/overview\/?'?/);
+});
+
+test('overview article body renders exactly one H1', () => {
+  let inFence = false;
+  let h1 = 0;
+  for (const line of overviewMdx.split('\n')) {
+    if (/^\s*(```|~~~)/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    if (/^#(\s|$)/.test(line)) h1 += 1;
+  }
+  assert.equal(h1, 1, 'overview article must contain exactly one H1 heading');
 });
