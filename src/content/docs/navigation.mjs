@@ -63,3 +63,28 @@ export function docPath(slug) {
   }
   return `/docs/${slug}/`;
 }
+
+// B05: дерево боковой навигации из опубликованных разделов/статей.
+// Черновики и планы исключены (активных ссылок на них нет). Текущая статья
+// (currentSlug) помечается как active, а её группа открывается (open).
+// Порядок разделов и статей — по полю order; порядок не зависит от currentSlug.
+export function getSidebarNav(currentSlug = '') {
+  const published = getPublishedDocs();
+  const groups = new Map();
+  for (const d of published) {
+    if (!groups.has(d.section)) {
+      groups.set(d.section, {section: d.section, items: []});
+    }
+    groups.get(d.section).items.push(d);
+  }
+  return [...groups.values()].map((g) => ({
+    section: g.section,
+    open: g.items.some((i) => i.slug === currentSlug),
+    items: g.items.map((i) => ({
+      slug: i.slug,
+      title: i.title,
+      active: i.slug === currentSlug,
+      href: docPath(i.slug),
+    })),
+  }));
+}

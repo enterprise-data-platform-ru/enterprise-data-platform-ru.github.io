@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {linkHref} from '../src/lib/paths.mjs';
 import sitemap from '../src/app/sitemap.js';
-import {docsNav, getPublishedDocs, docPath} from '../src/content/docs/navigation.mjs';
+import {docsNav, getPublishedDocs, docPath, getSidebarNav} from '../src/content/docs/navigation.mjs';
 
 // A04 docs SEO/accessibility contract: the breadcrumb home link and the contact
 // reference must resolve through the A01 helper for both hosting modes, and the
@@ -63,4 +63,40 @@ test('sitemap publishes only published docs (no test path, includes overview)', 
   for (const u of urls) {
     assert.ok(!u.includes('/edp-test'), 'sitemap must not reference a test path');
   }
+});
+
+// B05 documentation sidebar contract.
+
+test('sidebar groups published docs by section and excludes drafts/plans', () => {
+  const groups = getSidebarNav();
+  const slugs = groups.flatMap((g) => g.items.map((i) => i.slug));
+  // Draft/planned topics must not produce active links.
+  assert.ok(!slugs.includes('architecture'), 'planned topic must not appear');
+  assert.ok(!slugs.includes('components'), 'draft topic must not appear');
+  assert.ok(slugs.includes('overview'), 'published article must appear');
+  // Every item exposes a real route and is inactive without a current slug.
+  for (const g of groups) {
+    assert.equal(g.open, false, 'no group is open without a current slug');
+    for (const i of g.items) {
+      assert.equal(i.href, `/docs/${i.slug}/`);
+      assert.equal(i.active, false);
+    }
+  }
+});
+
+test('sidebar marks the current article and opens its group', () => {
+  const groups = getSidebarNav('overview');
+  const group = groups.find((g) => g.items.some((i) => i.slug === 'overview'));
+  assert.ok(group, 'group containing the current article must exist');
+  assert.equal(group.open, true, 'current group must be open');
+  const item = group.items.find((i) => i.slug === 'overview');
+  assert.equal(item.active, true);
+  assert.equal(item.href, '/docs/overview/');
+});
+
+test('sidebar sections stay ordered by the registry order', () => {
+  const groups = getSidebarNav('overview');
+  const order = getPublishedDocs().map((d) => d.section);
+  // Sections are emitted in first-appearance order (already sorted by order).
+  assert.deepEqual(groups.map((g) => g.section), order);
 });

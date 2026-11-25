@@ -172,4 +172,13 @@
 
 - B04 (этого коммита) завершён: общий layout документации с тремя областями (sidebar / статья / оглавление), переиспользованы Header/Footer, убрано дублирование.
 
-Следующая задача: **B05 — Sidebar и активный маршрут** (зависимость: B04 готова).
+Следующая задача: **B05 — Sidebar и активный маршрут (завершена)**.
+- `src/content/docs/navigation.mjs`: добавлен чистый хелпер `getSidebarNav(currentSlug = '')` — дерево из `getPublishedDocs()`, сгруппированное по `section` (порядок по `order`); черновики/планы исключены (активных ссылок нет); текущая статья помечается `active`, её группа `open`. Порядок независим от `currentSlug`.
+- `src/components/DocsSidebar.jsx` (новый, Server Component): рендерит `<aside class="docs-sidebar">` с группами через нативные `<details>`/`<summary>` (клавиатурно доступны, сворачиваются на узком экране). Активная статья — `aria-current="page"` + нецветовой глиф-маркер `●` (`docs-nav-marker`, `aria-hidden`); не опирается только на цвет. Ссылки через `linkHref(docPath(slug))`.
+- `src/app/docs/overview/layout.jsx`: инлайновый плоский список заменён на `<DocsSidebar currentSlug="overview" />`; структура shell (sidebar / article / toc) и Header/Footer сохранены, `main id="main"` не дублируется. Неназначенный TOC оставлен без изменений (B06).
+- `src/app/globals.css`: добавлены ограниченные селекторы `.docs-nav-group`, `.docs-nav-summary`, `.docs-nav-items`, `.docs-nav-item`, `.docs-nav-marker`, `.docs-nav-item.is-active a`; существующие стили главной не тронуты.
+- Тесты `tests/docs.test.mjs` (3 новых): группировка published и исключение draft/planned, пометка активной статьи + раскрытие её группы, порядок групп по реестру. Итого 37/37 (было 34).
+- Проверки: `npm test` 37/37; сборка `''` и `/edp-test` + `check:export` — OK (84 local asset refs / 6 HTML файлов в обоих режимах). Восстановлен production-экспорт (`'' build` + `check:export`, basePath=/). DOM `out/docs/overview/index.html`: 1×`docs-nav-group`, 1×`<details open>` (раскрыта группа «Обзор»), 1×`docs-nav-item is-active` с `aria-current="page"` и маркером `●`; ссылок на `docs/architecture`/`docs/components` нет (0). `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `feat: add documentation sidebar navigation`.
+
+Следующая задача: **B06 — Breadcrumbs, оглавление и переходы между статьями** (зависимость: B05 готова).
