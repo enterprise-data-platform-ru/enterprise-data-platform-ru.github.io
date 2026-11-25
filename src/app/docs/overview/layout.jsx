@@ -1,19 +1,26 @@
 import React from 'react';
 import DocsSidebar from '../../../components/DocsSidebar.jsx';
+import DocsBreadcrumb from '../../../components/DocsBreadcrumb.jsx';
+import DocsArticleNav from '../../../components/DocsArticleNav.jsx';
+import DocsToc from '../../../components/DocsToc.jsx';
 
+// Б06: шаблон статьи документации — боковая навигация (B05), хлебные крошки и
+// переходы «предыдущая/следующая» (B06), а также оглавление, собранное из
+// заголовков h2/h3 этой статьи (а не вручную прописанный список).
 export default function DocsOverviewLayout({children}) {
   return (
     <div className="docs-shell">
       <DocsSidebar currentSlug="overview" />
 
-      <main id="main" className="docs-article">{children}</main>
+      <main id="main" className="docs-article">
+        <DocsBreadcrumb currentSlug="overview" />
+        {children}
+        <DocsArticleNav currentSlug="overview" />
+      </main>
 
       <aside className="docs-toc" aria-label="Оглавление">
         <h2>На этой странице</h2>
-        <ul>
-          <li><a href="#naznachenie">Назначение</a></li>
-          <li><a href="#granitsy">Границы</a></li>
-        </ul>
+        <DocsToc scopeId="main" />
       </aside>
     </div>
   );

@@ -88,3 +88,16 @@ export function getSidebarNav(currentSlug = '') {
     })),
   }));
 }
+
+// B06: переходы «предыдущая / следующая» берутся из порядка опубликованных
+// статей, поэтому переход не может вести на плановый раздел или черновик.
+// Возвращаются текущая запись и ближайшие соседи; отсутствующий сосед — null,
+// тогда пажер эту сторону не рисует (нет нерабочих кнопок).
+export function getArticleNav(currentSlug = '') {
+  const published = getPublishedDocs();
+  const index = published.findIndex((d) => d.slug === currentSlug);
+  const current = index >= 0 ? published[index] : null;
+  const prev = index > 0 ? published[index - 1] : null;
+  const next = index >= 0 && index < published.length - 1 ? published[index + 1] : null;
+  return {current, prev, next};
+}

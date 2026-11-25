@@ -2,7 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {linkHref} from '../src/lib/paths.mjs';
 import sitemap from '../src/app/sitemap.js';
-import {docsNav, getPublishedDocs, docPath, getSidebarNav} from '../src/content/docs/navigation.mjs';
+import {docsNav, getPublishedDocs, docPath, getSidebarNav, getArticleNav} from '../src/content/docs/navigation.mjs';
+import {slugifyHeading, uniqueHeadingId} from '../src/lib/heading-slug.mjs';
 
 // A04 docs SEO/accessibility contract: the breadcrumb home link and the contact
 // reference must resolve through the A01 helper for both hosting modes, and the
@@ -99,4 +100,56 @@ test('sidebar sections stay ordered by the registry order', () => {
   const order = getPublishedDocs().map((d) => d.section);
   // Sections are emitted in first-appearance order (already sorted by order).
   assert.deepEqual(groups.map((g) => g.section), order);
+});
+
+// B06 breadcrumbs, article pager, and table-of-contents contracts.
+
+test('breadcrumb home and docs links resolve through linkHref in both basePath modes', () => {
+  // The breadcrumb crumb to /docs/ must resolve like the home crumb.
+  assert.equal(linkHref('/docs/', ''), '/docs/');
+  assert.equal(linkHref('/docs/', '/edp'), '/edp/docs/');
+});
+
+test('article pager uses only published docs (no planned/draft transitions)', () => {
+  const publishedSlugs = new Set(getPublishedDocs().map((d) => d.slug));
+  // The single published article has no neighbors yet: both sides are null, so
+  // the pager renders nothing rather than pointing at a planned/draft route.
+  const nav = getArticleNav('overview');
+  assert.ok(nav.current, 'current article must resolve');
+  assert.equal(nav.current.slug, 'overview');
+  assert.equal(nav.prev, null);
+  assert.equal(nav.next, null);
+
+  // For every known slug the neighbors must always be published entries
+  // (or null) — never a planned/draft topic.
+  for (const d of docsNav) {
+    const {prev, next} = getArticleNav(d.slug);
+    for (const neighbor of [prev, next]) {
+      if (neighbor) {
+        assert.ok(publishedSlugs.has(neighbor.slug), `neighbor must be published: ${neighbor.slug}`);
+      }
+    }
+  }
+});
+
+test('article pager excludes planned and draft slugs even as neighbors', () => {
+  const nav = getArticleNav('overview');
+  const neighborSlugs = [nav.prev, nav.next].filter(Boolean).map((n) => n.slug);
+  assert.ok(!neighborSlugs.includes('architecture'), 'planned topic must not be a neighbor');
+  assert.ok(!neighborSlugs.includes('components'), 'draft topic must not be a neighbor');
+});
+
+test('heading slug is Cyrillic-safe, deterministic and deduplicated', () => {
+  assert.equal(slugifyHeading('Назначение'), 'назначение');
+  assert.equal(slugifyHeading('Границы ответственности и модули'), 'границы-ответственности-и-модули');
+  // Punctuation is stripped and repeated spaces collapse to a single hyphen.
+  assert.equal(slugifyHeading('Код,  и  стиль?'), 'код-и-стиль');
+  // Deterministic: same text yields the same slug (stable anchor across renders).
+  assert.equal(slugifyHeading('Код,  и  стиль?'), slugifyHeading('Код, и стиль?'));
+
+  // uniqueHeadingId assigns a suffix to collisions but keeps the first base.
+  const used = new Set();
+  assert.equal(uniqueHeadingId('код', used), 'код');
+  assert.equal(uniqueHeadingId('код', used), 'код-1');
+  assert.equal(uniqueHeadingId('код', used), 'код-2');
 });
