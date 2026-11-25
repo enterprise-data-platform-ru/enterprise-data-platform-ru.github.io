@@ -917,3 +917,24 @@ img {
   font-size:13px;
   color:var(--muted);
   max-width:520px}
+.docs-published {
+  padding:32px 0}
+.docs-published h2 {
+  margin:0 0 16px}
+.docs-published-list {
+  list-style:none;
+  margin:0;
+  padding:0;
+  border-top:1px solid var(--line)}
+.docs-published-list li {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line)}
+.docs-published-list a {
+  color:var(--green);
+  text-decoration:none}
+.docs-published-list a:hover {
+  text-decoration:underline}

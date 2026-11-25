@@ -160,4 +160,14 @@
 - `git push` не выполнялся. Коммит по плану (владельцем): `feat: prototype static MDX documentation`.
 - **Блокер**: подтверждение ADR-решения владельцем (чек-лист в `docs/adr/0001-documentation-engine.md`) — не получено.
 
-Следующая задача: **B03 — реестр документации и маршруты** (зависимость: B02).
+Следующая выполнена: **B03 — реестр документации и маршруты (завершена)**.
+- `src/content/docs/navigation.mjs` (новый): единый источник истины — slug, title, section, order, status (`published`/`draft`/`planned`), source. Контроль дублей slug при инициализации (бросает исключение). Хелперы `getDocsNav()` (сортировка по order), `getPublishedDocs()` (только `published`), `docPath(slug)` → `/docs/<slug>/`. Маршруты — файловая маршрутизация (page.mdx), динамический сегмент и `generateStaticParams` не нужны.
+- `src/app/docs/overview/page.mdx` + `layout.jsx` (новые): первая реальная статья «Обзор платформы» (`published`); layout переиспользует фирменный Header/Footer. Черновики/планы (`architecture`, `components`) маршрутов не создают.
+- Временный PoC-URL удалён: `src/app/docs/poc/` (layout + page.mdx) удалён, ссылок на `poc` в `src`/`tests` нет.
+- `src/app/docs/page.jsx`: блок «Опубликованные материалы» строится только из `getPublishedDocs()`, ссылки через `linkHref(docPath(slug))` (оба basePath).
+- `src/app/sitemap.js`: статьи добавляются только из `getPublishedDocs()` (priority 0.7); root и `/docs/` сохранены. `src/app/globals.css`: ограниченные стили `.docs-published*` (без изменения дизайна главной).
+- Тесты `tests/docs.test.mjs` (4 новых): уникальность slug, published-маршруты и исключение draft/plans, черновики/планы не публикуются, sitemap содержит только published (overview) без утечки `/edp-test`. Итого 34/34 (было 30).
+- Проверки: `npm test` 34/34; сборка `''` и `/edp-test` + `check:export` — OK (83 local asset refs / 6 HTML файлов в обоих режимах). Прямой URL после экспорта: `out/docs/overview/index.html` присутствует, h1 «Обзор платформы». Sitemap в режиме `/edp-test` ссылается только на production-домен (утечки `/edp-test` нет). Восстановлен production-экспорт (`'' build` + `check:export`, basePath=/). `git diff --check` — чисто. `git push` не выполнялся.
+- Коммит по плану (владельцем): `feat: define static documentation route registry`.
+
+Следующая задача: **B04 — Общий layout документации** (зависимость: B03).

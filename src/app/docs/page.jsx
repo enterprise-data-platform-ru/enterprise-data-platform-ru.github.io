@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../../components/Header.jsx';
 import Footer from '../../components/Footer.jsx';
 import {docs} from '../../content/site.mjs';
+import {getPublishedDocs, docPath} from '../../content/docs/navigation.mjs';
 import {linkHref} from '../../lib/paths.mjs';
 
 export const metadata = {
@@ -53,6 +54,20 @@ export default function DocsPage() {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="docs-published">
+          <div className="container">
+            <h2>Опубликованные материалы</h2>
+            <ul className="docs-published-list">
+              {getPublishedDocs().map(d => (
+                <li key={d.slug}>
+                  <a href={linkHref(docPath(d.slug))}>{d.title}</a>
+                  <span className="mono docs-topic">{d.section}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
