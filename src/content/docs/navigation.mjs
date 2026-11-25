@@ -101,3 +101,23 @@ export function getArticleNav(currentSlug = '') {
   const next = index >= 0 && index < published.length - 1 ? published[index + 1] : null;
   return {current, prev, next};
 }
+
+// B07: статус каталожной карточки раздела. Карточка ссылается на реальный
+// маршрут только если раздел уже опубликован (есть запись реестра со
+// статусом published). Плановый раздел или ещё не созданный раздел
+// (отсутствует в реестре) возвращают 'planned' — для них ссылка не строится,
+// чтобы каталог не содержал мёртвых ссылок.
+export function getSectionStatus(slug = '') {
+  const match = docsNav.find((d) => d.slug === slug);
+  if (!match) return 'planned';
+  return match.status;
+}
+
+// B07: точка входа «Начать работу» — опубликованная статья-обзор.
+// Ищем по слагу overview; если обзор недоступен, берём первую опубликованную
+// статью по порядку. Если опубликованных нет — null, блок не рисуется.
+export function getGettingStarted() {
+  const published = getPublishedDocs();
+  if (published.length === 0) return null;
+  return published.find((d) => d.slug === 'overview') ?? published[0];
+}

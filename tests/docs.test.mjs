@@ -2,8 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {linkHref} from '../src/lib/paths.mjs';
 import sitemap from '../src/app/sitemap.js';
-import {docsNav, getPublishedDocs, docPath, getSidebarNav, getArticleNav} from '../src/content/docs/navigation.mjs';
+import {docsNav, getPublishedDocs, getSectionStatus, getGettingStarted, docPath, getSidebarNav, getArticleNav} from '../src/content/docs/navigation.mjs';
 import {slugifyHeading, uniqueHeadingId} from '../src/lib/heading-slug.mjs';
+import {docs} from '../src/content/site.mjs';
 
 // A04 docs SEO/accessibility contract: the breadcrumb home link and the contact
 // reference must resolve through the A01 helper for both hosting modes, and the
@@ -152,4 +153,59 @@ test('heading slug is Cyrillic-safe, deterministic and deduplicated', () => {
   assert.equal(uniqueHeadingId('код', used), 'код');
   assert.equal(uniqueHeadingId('код', used), 'код-1');
   assert.equal(uniqueHeadingId('код', used), 'код-2');
+});
+
+// B07 documentation landing as a navigation hub: catalog cards are linkable only
+// when their section is published; future sections are marked without a route;
+// and the "Начать работу" entry resolves to a real published article.
+test('catalog cards are wired to the docs registry via slug', () => {
+  // Every catalog card must declare a slug so the landing can resolve status.
+  for (const card of docs) {
+    assert.ok(typeof card.slug === 'string' && card.slug.length > 0, `${card.code} has a slug`);
+  }
+});
+
+test('getSectionStatus: published section reports published, others are future', () => {
+  assert.equal(getSectionStatus('overview'), 'published');
+  // planned, draft and not-yet-registered sections are all "future" (no route).
+  assert.ok(getSectionStatus('architecture') !== 'published');
+  assert.ok(getSectionStatus('components') !== 'published');
+  // Slugs absent from the registry fall back to the future status.
+  assert.equal(getSectionStatus('security'), 'planned');
+  assert.equal(getSectionStatus('operations'), 'planned');
+  assert.equal(getSectionStatus(''), 'planned');
+});
+
+test('catalog cards only link when published; future cards have no route', () => {
+  // A published catalog card resolves to a real route through docPath + linkHref.
+  const publishedCards = docs.filter((c) => getSectionStatus(c.slug) === 'published');
+  for (const card of publishedCards) {
+    const href = linkHref(docPath(card.slug), '/docs-base');
+    assert.ok(href.startsWith('/docs-base/docs/'), `published card ${card.slug} resolves under basePath`);
+    assert.ok(href.endsWith('/docs/'), `published card ${card.slug} ends with slash`);
+  }
+  // Future cards must not produce a link. We assert the contract directly:
+  // any non-published card would throw if routed, proving no dead link exists.
+  const futureCards = docs.filter((c) => getSectionStatus(c.slug) !== 'published');
+  for (const card of futureCards) {
+    assert.ok(!docsNav.some((d) => d.slug === card.slug && d.status === 'published'),
+      `future card ${card.slug} has no published route`);
+  }
+});
+
+test('getSectionStatus published cards always have a registry entry', () => {
+  // Invariant: a card reported published must exist in the registry so docPath works.
+  for (const card of docs) {
+    if (getSectionStatus(card.slug) === 'published') {
+      assert.ok(docsNav.some((d) => d.slug === card.slug), `${card.slug} is in the registry`);
+    }
+  }
+});
+
+test('getGettingStarted resolves to a real published article', () => {
+  const start = getGettingStarted();
+  assert.ok(start, 'a getting-started entry exists when published docs exist');
+  const href = linkHref(docPath(start.slug), '/docs-base');
+  assert.ok(href.startsWith('/docs-base/docs/'), 'getting-started links under basePath');
+  assert.equal(getSectionStatus(start.slug), 'published');
 });

@@ -35,24 +35,28 @@ export const principles = [
 export const docs = [
   {
     code: 'A',
+    slug: 'architecture',
     title: 'Архитектура',
     description: 'Логическая топология, уровни платформы, потоки данных и принципы проектирования. Описывает как компоненты взаимодействуют и как принимать решения о выборе технологий.',
     topics: ['Reference Architecture', 'Data Pipeline', 'Масштабирование', 'On-premises / Cloud / Hybrid'],
   },
   {
     code: 'B',
+    slug: 'components',
     title: 'Компоненты',
     description: 'Описание модулей платформы: интеграция данных, lakehouse, обработка, аналитика, governance и эксплуатация. Для каждого — назначение, ключевые технологии и грани ответственности.',
     topics: ['Интеграция', 'Iceberg', 'Spark / Trino', 'OpenMetadata'],
   },
   {
     code: 'C',
+    slug: 'security',
     title: 'Безопасность',
     description: 'Модель доступа, сегментация данных, шифрование, аудит и соответствие требованиям. SSO, RBAC/ABAC, политики доступа на каждом уровне.',
     topics: ['IAM / SSO', 'RBAC / ABAC', 'Шифрование', 'Аудит'],
   },
   {
     code: 'D',
+    slug: 'operations',
     title: 'Эксплуатация',
     description: 'Развёртывание, GitOps, мониторинг, резервное копирование и восстановление. Воспроизводимые процедуры и стандарты операций.',
     topics: ['Kubernetes', 'Argo CD', 'Prometheus / Grafana', 'Backup / DR'],
