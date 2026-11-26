@@ -253,3 +253,103 @@ test('overview article body renders exactly one H1', () => {
   }
   assert.equal(h1, 1, 'overview article must contain exactly one H1 heading');
 });
+
+// FIX-04 compact catalog contract: the index page renders a compact
+// navigational catalog with a getting-started card, section cards with
+// status badges, and an optional "other materials" list.
+const docsPageSrc = readFileSync(new URL('../src/app/docs/page.jsx', import.meta.url), 'utf8');
+const docsCssSrc = readFileSync(new URL('../src/app/docs/docs.css', import.meta.url), 'utf8');
+
+test('docs index renders compact catalog structure (no hero)', () => {
+  // Must NOT contain a marketing hero section.
+  assert.ok(!/className="docs-hero"/.test(docsPageSrc),
+    'index must not contain docs-hero class');
+  // Must contain a getting-started card.
+  assert.ok(/className="docs-start-card"/.test(docsPageSrc),
+    'index must contain docs-start-card');
+  // Must contain section cards grid.
+  assert.ok(/className="docs-cards"/.test(docsPageSrc),
+    'index must contain docs-cards grid');
+  // Must contain status labels for planned/draft sections.
+  assert.ok(/Скоро/.test(docsPageSrc),
+    'index must show "Скоро" status label for planned sections');
+});
+
+test('docs index uses getGettingStarted and getSectionStatus helpers', () => {
+  assert.ok(/getGettingStarted/.test(docsPageSrc),
+    'index must call getGettingStarted');
+  assert.ok(/getSectionStatus/.test(docsPageSrc),
+    'index must call getSectionStatus');
+});
+
+test('docs CSS contains catalog card styles', () => {
+  assert.ok(/\.docs-start-card\b/.test(docsCssSrc),
+    'CSS must define .docs-start-card');
+  assert.ok(/\.docs-cards\b/.test(docsCssSrc),
+    'CSS must define .docs-cards');
+  assert.ok(/\.docs-card-status\b/.test(docsCssSrc),
+    'CSS must define .docs-card-status');
+  assert.ok(/\.docs-card--published\b/.test(docsCssSrc),
+    'CSS must define .docs-card--published');
+  assert.ok(/\.docs-topics\b/.test(docsCssSrc),
+    'CSS must define .docs-topics');
+  assert.ok(/\.docs-topic\b/.test(docsCssSrc),
+    'CSS must define .docs-topic');
+});
+
+test('docs index deduplicates getting-started from other materials', () => {
+  const published = getPublishedDocs();
+  const start = getGettingStarted();
+  const catalogSlugs = new Set(
+    docs
+      .filter((card) => getSectionStatus(card.slug) === 'published')
+      .map((card) => card.slug),
+  );
+  const otherMaterials = published.filter(
+    (entry) =>
+      entry.slug !== start?.slug &&
+      !catalogSlugs.has(entry.slug),
+  );
+  // No duplicate: the getting-started slug must not appear in otherMaterials.
+  if (start) {
+    assert.ok(
+      !otherMaterials.some((e) => e.slug === start.slug),
+      'getting-started slug must not appear in otherMaterials',
+    );
+  }
+  // Catalog-published slugs must not appear in otherMaterials.
+  for (const slug of catalogSlugs) {
+    assert.ok(
+      !otherMaterials.some((e) => e.slug === slug),
+      `catalog slug ${slug} must not appear in otherMaterials`,
+    );
+  }
+});
+
+test('docs index shows correct status labels for section cards', () => {
+  const labelMap = {
+    published: 'Доступно',
+    draft: 'В разработке',
+    planned: 'Скоро',
+  };
+  for (const card of docs) {
+    const status = getSectionStatus(card.slug);
+    const expectedLabel = labelMap[status] || status;
+    // The page source must reference this label text.
+    assert.ok(
+      docsPageSrc.includes(expectedLabel),
+      `status label "${expectedLabel}" must appear in docs page source for section ${card.slug}`,
+    );
+  }
+});
+
+test('docs index has a single H1 and no marketing sections', () => {
+  assert.ok((docsPageSrc.match(/<h1/g) || []).length === 1,
+    'docs index must have exactly one H1');
+  assert.ok(!/className="docs-hero"/.test(docsPageSrc),
+    'docs index must not have marketing hero');
+  assert.ok(!/className="docs-start"/.test(docsPageSrc),
+    'docs index must not have old docs-start section');
+  assert.ok(!/className="docs-start-empty"/.test(docsPageSrc),
+    'docs index must not have old docs-start-empty section');
+});
