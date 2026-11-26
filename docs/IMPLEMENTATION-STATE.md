@@ -362,3 +362,52 @@
 - `git diff --check` — whitespace clean.
 - Ветка: `fix/fix-04-compact-catalog`. Изменены 4 файла: `src/app/docs/page.jsx`, `src/app/docs/docs.css`, `tests/docs.test.mjs`, `docs/IMPLEMENTATION-STATE.md`.
 - `git push` не выполнялся. Отдельная от других FIX. Отдельная от реорганизации доменов (FIX-02).
+
+---
+
+## FIX-06 — Sticky Sidebar / TOC / ScrollSpy / Anchor Navigation
+
+Дата: 26.11.2026. Базовый коммит: `46c9a44`.
+
+### Изменения
+
+- **FIX-06.1/06.2 — Sticky Sidebar + TOC** (`src/app/docs/docs.css`):
+  `.docs-sidebar` и `.docs-toc` получили `position: sticky; top: calc(var(--docs-header-height, 77px) + Npx); align-self: start; max-height: calc(100vh - var(--docs-header-height, 77px) - Npx); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable;`.
+  В `@media (max-width: 899px)` — оба сбрасываются на `position: static; max-height: none; overflow: visible; scrollbar-gutter: auto;`.
+  Добавлены `:focus-visible` стили для ссылок в sidebar и TOC.
+  Добавлены стили `.docs-toc-item.is-active a` и `a[aria-current="location"]` для подсветки активной секции.
+
+- **FIX-06.3 — ScrollSpy** (`src/lib/scroll-spy.mjs`, `src/components/DocsToc.jsx`):
+  Новый чистый модуль `scroll-spy.mjs` с функциями `findActiveHeading()` и `collectHeadingEntries()`.
+  `DocsToc.jsx` использует `IntersectionObserver` (с fallback на `scroll` + `getBoundingClientRect`) для отслеживания активной секции.
+  Активный TOC-item получает класс `is-active` и атрибут `aria-current="location"`.
+
+- **FIX-06.4 — Anchor Navigation** (`src/app/docs/docs.css`):
+  `scroll-margin-top` для `#docs-content a[id]` и заголовков изменён с `12px` на `calc(var(--docs-header-height, 77px) + 12px)` для корректного учёта высоты sticky header.
+
+- **FIX-06.5 — DocsArticleNav Bug Fix** (`src/components/DocsArticleNav.jsx`):
+  `getArticleNav` возвращает сырые объекты из `docsNav` (с `.slug`, без `.href`).
+  Исправлено: импортирован `docPath`, ссылки `prev`/`next` используют `linkHref(docPath(prev.slug))` вместо `linkHref(prev.href)` (который был `undefined`).
+
+### Автопроверки
+
+- `npm test` — 87/87 PASS (fail 0, cancelled 0, skipped 0, todo 0).
+  Включая 9 новых тестов в `tests/scroll-spy.test.mjs` и 7 новых тестов в `tests/docs-layout.test.mjs`.
+- `npm run build` (empty basePath) — production сборка успешно (8 routes).
+- `npm run build` (basePath=/edp-test) — production сборка успешно (8 routes).
+- `git diff --check` — whitespace clean.
+
+### Изменённые файлы
+
+- `src/app/docs/docs.css` — sticky CSS, mobile reset, focus-visible, active state, scroll-margin-top.
+- `src/components/DocsToc.jsx` — ScrollSpy через IntersectionObserver + fallback.
+- `src/components/DocsArticleNav.jsx` — фикс `docPath(slug)` вместо `.href`.
+- `src/lib/scroll-spy.mjs` — новый модуль (чистая логика ScrollSpy).
+- `tests/scroll-spy.test.mjs` — 9 тестов чистых функций.
+- `tests/docs-layout.test.mjs` — 7 тестов CSS-контрактов и компонентных проверок.
+- `docs/IMPLEMENTATION-STATE.md` — этот журнал.
+
+### Не выполнено
+
+- VISUAL_VALIDATION: NOT_RUN — браузерная проверка sticky-поведения на 7 viewport отложена владельцу.
+- `git commit` и `git push` не выполнялись (запрещено заданием).

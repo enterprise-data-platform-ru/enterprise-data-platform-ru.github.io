@@ -1,5 +1,5 @@
 import React from 'react';
-import {getArticleNav} from '../content/docs/navigation.mjs';
+import {getArticleNav, docPath} from '../content/docs/navigation.mjs';
 import {linkHref} from '../lib/paths.mjs';
 
 // B06: переходы «предыдущая / следующая» между опубликованными статьями.
@@ -13,14 +13,14 @@ export default function DocsArticleNav({currentSlug = ''}) {
   return (
     <nav className="docs-article-nav" aria-label="Навигация по статьям">
       {prev ? (
-        <a className="docs-article-prev" href={linkHref(prev.href)}>
+        <a className="docs-article-prev" href={linkHref(docPath(prev.slug))}>
           <span className="mono docs-article-dir">← Предыдущая</span>
           <span className="docs-article-title">{prev.title}</span>
         </a>
       ) : <span className="docs-article-prev is-empty" aria-hidden="true" />}
 
       {next ? (
-        <a className="docs-article-next" href={linkHref(next.href)}>
+        <a className="docs-article-next" href={linkHref(docPath(next.slug))}>
           <span className="mono docs-article-dir">Следующая →</span>
           <span className="docs-article-title">{next.title}</span>
         </a>

@@ -8,6 +8,8 @@ const root = read('src/app/docs/layout.jsx');
 const overview = read('src/app/docs/overview/layout.jsx');
 const layout = read('src/components/DocsLayout.jsx');
 const css = read('src/app/docs/docs.css');
+const toc = read('src/components/DocsToc.jsx');
+const articleNav = read('src/components/DocsArticleNav.jsx');
 
 // Source contracts complement, but do not replace, exported HTML checks.
 test('documentation routes declare canonical metadata inside alternates', () => {
@@ -75,4 +77,58 @@ test('docs CSS keeps a six-level heading scale and the catalog h1 selector', () 
     'H6 must be 14/22px');
   assert.match(css, /--docs-h1-size:\s*36px/);
   assert.match(css, /--docs-h2-size:\s*28px/);
+});
+
+// FIX-06: sticky sidebar and TOC
+test('docs CSS makes sidebar and TOC sticky on desktop', () => {
+  assert.ok(/\.docs-sidebar\s*\{[^}]*position:\s*sticky/s.test(css),
+    '.docs-sidebar must be position: sticky');
+  assert.ok(/\.docs-toc\s*\{[^}]*position:\s*sticky/s.test(css),
+    '.docs-toc must be position: sticky');
+  assert.ok(/\.docs-sidebar\s*\{[^}]*max-height:/s.test(css),
+    '.docs-sidebar must have max-height for independent scrolling');
+  assert.ok(/\.docs-toc\s*\{[^}]*max-height:/s.test(css),
+    '.docs-toc must have max-height for independent scrolling');
+});
+
+test('docs CSS resets sidebar and TOC to static on mobile (≤899px)', () => {
+  // The 899px block must reset both panels to position: static.
+  assert.ok(/@media\s*\(max-width:\s*899px\)\s*\{[\s\S]*position:\s*static/g.test(css),
+    'mobile breakpoint must reset to position: static');
+});
+
+test('docs CSS has keyboard focus styles for sidebar and TOC', () => {
+  assert.ok(/\.docs-sidebar\s+a:focus-visible/.test(css),
+    'sidebar links must have :focus-visible style');
+  assert.ok(/\.docs-toc\s+a:focus-visible/.test(css),
+    'TOC links must have :focus-visible style');
+});
+
+// FIX-06: ScrollSpy in DocsToc
+test('DocsToc uses IntersectionObserver for ScrollSpy', () => {
+  assert.ok(/IntersectionObserver/.test(toc),
+    'DocsToc must use IntersectionObserver');
+  assert.ok(/aria-current/.test(toc),
+    'DocsToc must set aria-current on active link');
+  assert.ok(/is-active/.test(toc),
+    'DocsToc must add is-active class to active item');
+});
+
+test('DocsArticleNav uses docPath for prev/next hrefs', () => {
+  assert.ok(/docPath\(prev\.slug\)/.test(articleNav),
+    'prev link must use docPath(prev.slug)');
+  assert.ok(/docPath\(next\.slug\)/.test(articleNav),
+    'next link must use docPath(next.slug)');
+  assert.doesNotMatch(articleNav, /prev\.href/, 'must not use prev.href (undefined)');
+  assert.doesNotMatch(articleNav, /next\.href/, 'must not use next.href (undefined)');
+});
+
+test('docs CSS scroll-margin-top accounts for sticky header', () => {
+  assert.ok(/scroll-margin-top:\s*calc\(var\(--docs-header-height/.test(css),
+    'scroll-margin-top must use --docs-header-height to offset sticky header');
+});
+
+test('docs CSS styles active TOC item for ScrollSpy', () => {
+  assert.ok(/\.docs-toc-item\.is-active/.test(css),
+    'CSS must style .docs-toc-item.is-active');
 });
