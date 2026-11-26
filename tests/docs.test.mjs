@@ -440,6 +440,66 @@ test('mdx-components exports DocsTable with ARIA region wrapper', () => {
     'DocsTable must set aria-label');
 });
 
+test('mdx-components recursively cleans table structure whitespace', () => {
+  assert.ok(/function\s+cleanTableChildren\s*\(/.test(mdxComponentsSrc),
+    'must define cleanTableChildren');
+  assert.ok(/function\s+rebuildTableElement\s*\(/.test(mdxComponentsSrc),
+    'must define rebuildTableElement for recursive cleanup');
+  assert.ok(/TABLE_STRUCTURE_TAGS/.test(mdxComponentsSrc),
+    'must enumerate structural table tags to clean recursively');
+  assert.ok(/trim\(\)\s*!==\s*['"]['"]/.test(mdxComponentsSrc),
+    'must remove only whitespace-only string children');
+  const componentsMap = mdxComponentsSrc.slice(mdxComponentsSrc.indexOf('const components'));
+  // Cleaning happens at the table level, so structural tags are not registered separately.
+  assert.ok(!/\bthead\s*:/.test(componentsMap), 'must not register thead separately');
+  assert.ok(!/\btbody\s*:/.test(componentsMap), 'must not register tbody separately');
+  assert.ok(!/\btr\s*:/.test(componentsMap), 'must not register tr separately');
+  // Cell content must be preserved: th/td are not overridden.
+  assert.ok(!/\bth\s*:/.test(componentsMap), 'must not override th (preserve cell content)');
+  assert.ok(!/\btd\s*:/.test(componentsMap), 'must not override td (preserve cell content)');
+});
+
+test('DocsTable removes whitespace on every table level and keeps cell content', async () => {
+  const react = await import('react');
+  const {useMDXComponents} = await import('../mdx-components.js');
+  const tableComponent = useMDXComponents().table;
+  const ce = (type, props, ...kids) => react.createElement(type, props, ...kids);
+  // Realistic GFM tree: whitespace "\n" between structural elements at every level.
+  const td = (v) => ce('td', null, v);
+  const tr = ce('tr', null, '\n  ', td(['\n', 'A', '\n']), '\n  ', td(['\n', 'B', '\n']), '\n');
+  const tbody = ce('tbody', null, tr, '\n');
+  const thead = ce('thead', null, '\n', ce('tr', null, ce('th', null, 'H')));
+  const wrapper = tableComponent({children: [thead, '\n', tbody, '\n']});
+
+  const STRUCT = new Set(['table', 'thead', 'tbody', 'tfoot', 'tr', 'caption', 'colgroup', 'col']);
+  const table = wrapper.props.children;
+  let whitespaceCount = 0;
+  const walk = (children) => {
+    for (const child of react.Children.toArray(children)) {
+      if (!child || !child.type || !STRUCT.has(child.type)) {
+        continue;
+      }
+      // No whitespace text node may sit directly under a structural element.
+      for (const direct of react.Children.toArray(child.props.children)) {
+        if (typeof direct === 'string' && direct.trim() === '') {
+          whitespaceCount += 1;
+        }
+      }
+      walk(child.props.children);
+    }
+  };
+  walk(table.props.children);
+  assert.equal(whitespaceCount, 0,
+    'no whitespace text nodes may remain under structural table elements');
+
+  // Cell content must be preserved inside <td>.
+  const tbodyEl = table.props.children.find((c) => c && c.type === 'tbody');
+  const trEl = tbodyEl.props.children.find((c) => c && c.type === 'tr');
+  const tdEl = trEl.props.children.find((c) => c && c.type === 'td');
+  const cellText = react.Children.toArray(tdEl.props.children).map(String).join('');
+  assert.ok(cellText.includes('A'), 'cell content must be preserved');
+});
+
 test('mdx-components exports DocsCallout (callout) component', () => {
   assert.ok(/DocsCallout/.test(mdxComponentsSrc),
     'mdx-components must define DocsCallout');
