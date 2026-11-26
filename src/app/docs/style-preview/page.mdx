@@ -237,19 +237,7 @@ kubectl get pods --all-namespaces --output=custom-columns="NAMESPACE:.metadata.n
 
 Отдельный тест нативной таблицы, `caption`, объединённых ячеек и заголовков строк. Здесь обёртка задана явно, поскольку буквальная JSX-разметка может обходить MDX mapping для `table`.
 
-<div className="docs-table-scroll" role="region" aria-label="Таблица с подписью" tabIndex={0}>
-  <table>
-    <caption>Таблица 1 — Демонстрационные параметры среды</caption>
-    <thead>
-      <tr><th scope="col">Ресурс</th><th scope="col">Значение</th><th scope="col">Описание</th></tr>
-    </thead>
-    <tbody>
-      <tr><th scope="row">CPU</th><td>8</td><td>Пример количества ядер</td></tr>
-      <tr><th scope="row">RAM</th><td>32 GiB</td><td>Пример объёма памяти</td></tr>
-      <tr><td colSpan={3}>Все значения приведены исключительно для проверки оформления.</td></tr>
-    </tbody>
-  </table>
-</div>
+<div className="docs-table-scroll" role="region" aria-label="Таблица с подписью" tabIndex={0}><table><caption>Таблица 1 — Демонстрационные параметры среды</caption><thead><tr><th scope="col">Ресурс</th><th scope="col">Значение</th><th scope="col">Описание</th></tr></thead><tbody><tr><th scope="row">CPU</th><td>8</td><td>Пример количества ядер</td></tr><tr><th scope="row">RAM</th><td>32 GiB</td><td>Пример объёма памяти</td></tr><tr><td colSpan={3}>Все значения приведены исключительно для проверки оформления.</td></tr></tbody></table></div>
 
 ## 7. Callout-блоки
 
