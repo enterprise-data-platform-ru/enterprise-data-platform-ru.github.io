@@ -116,7 +116,7 @@
 .docs-shell :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
 
 /* Shared heading scale: the catalog and MDX article start on the same baseline. */
-.docs-shell .docs-hero h1,
+.docs-shell .docs-catalog > h1,
 .docs-shell #docs-content h1 {
   color: var(--docs-heading);
   font-size: var(--docs-h1-size);
@@ -133,6 +133,9 @@
   font-weight: 600;
   letter-spacing: -.015em;
 }
+/* Catalog vertical rhythm: H1 to lead, and H2 to section cards. */
+.docs-shell .docs-catalog > h1 { margin: 0 0 16px; }
+.docs-shell .docs-catalog h2 { margin: 40px 0 16px; }
 /* MDX body: never target the site-wide Header, Footer, or catalog cards. */
 .docs-shell #docs-content {
   color: var(--docs-text);
@@ -147,8 +150,8 @@
 .docs-shell #docs-content h2 { margin: 40px 0 16px; }
 .docs-shell #docs-content h3 { font-size: 22px; line-height: 30px; margin: 28px 0 12px; }
 .docs-shell #docs-content h4 { font-size: 18px; line-height: 26px; margin: 24px 0 12px; }
-.docs-shell #docs-content h5,
-.docs-shell #docs-content h6 { font-size: 16px; line-height: 24px; margin: 24px 0 8px; }
+.docs-shell #docs-content h5 { font-size: 16px; line-height: 24px; margin: 24px 0 8px; }
+.docs-shell #docs-content h6 { font-size: 14px; line-height: 22px; margin: 24px 0 8px; }
 .docs-shell #docs-content h3,
 .docs-shell #docs-content h4,
 .docs-shell #docs-content h5,
@@ -163,6 +166,37 @@
 .docs-shell #docs-content p { color: inherit; margin: 0 0 16px; font-size: 16px; line-height: 28px; }
 .docs-shell #docs-content > h1 + p { color: var(--docs-muted); }
 .docs-shell #docs-content strong { color: var(--docs-heading); font-weight: 650; }
+.docs-shell #docs-content mark {
+  background: var(--docs-note);
+  color: var(--docs-heading);
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+.docs-shell #docs-content abbr {
+  text-decoration: dotted underline;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.docs-shell #docs-content sub,
+.docs-shell #docs-content sup {
+  font-size: .75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.docs-shell #docs-content sub { bottom: -.25em; }
+.docs-shell #docs-content sup { top: -.5em; }
+.docs-shell #docs-content .task-list-item {
+  list-style: none;
+  padding-inline-start: 2px;
+}
+.docs-shell #docs-content .task-list-item input[type="checkbox"] {
+  accent-color: var(--docs-primary);
+  width: 1rem;
+  height: 1rem;
+  margin: 0 8px 0 0;
+  vertical-align: -.15em;
+}
 .docs-shell #docs-content a[href] { color: var(--docs-primary); text-decoration: underline; text-underline-offset: 3px; }
 .docs-shell #docs-content a[href]:hover { color: #194638; }
 .docs-shell #docs-content ul,

@@ -41,3 +41,38 @@ test('docs stylesheet uses declared custom properties and no unscoped arrow rule
   assert.doesNotMatch(docs, /^\s*\.arrow\s*\{/m);
   assert.doesNotMatch(docs, /minmax\(280px,/);
 });
+
+test('docs CSS scopes task-list and inline content elements to #docs-content', () => {
+  const withoutComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '');
+  const docs = withoutComments(css);
+  // Inline content elements are styled inside the article body, not globally.
+  for (const tag of ['mark', 'abbr', 'sub', 'sup']) {
+    assert.ok(
+      new RegExp(`#docs-content\\s+${tag}\\b`).test(docs),
+      `${tag} must be scoped to #docs-content`,
+    );
+  }
+  assert.ok(new RegExp(`#docs-content\\s+\\.task-list-item\\b`).test(docs),
+    'CSS must style .task-list-item inside #docs-content');
+  // Checkboxes adopt the brand accent.
+  assert.ok(/input\[type="checkbox"\][\s\S]{0,200}accent-color:\s*var\(--docs-primary\)/.test(docs),
+    'checkbox must use accent-color: var(--docs-primary)');
+  // Mark uses a light surface from the existing brand palette.
+  assert.ok(/#docs-content\s+mark\b[\s\S]{0,120}background:\s*var\(--docs-note\)/.test(docs),
+    'mark must use a light brand background (--docs-note)');
+});
+
+test('docs CSS keeps a six-level heading scale and the catalog h1 selector', () => {
+  const withoutComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '');
+  const docs = withoutComments(css);
+  assert.doesNotMatch(docs, /\.docs-hero\b/, 'legacy .docs-hero selector must be removed');
+  assert.ok(/\.docs-catalog\s*>\s*h1\b/.test(docs),
+    'catalog H1 must use .docs-catalog > h1');
+  // H5 and H6 must have distinct sizes.
+  assert.ok(/#docs-content\s+h5\s*\{\s*font-size:\s*16px\s*;\s*line-height:\s*24px/.test(docs),
+    'H5 must be 16/24px');
+  assert.ok(/#docs-content\s+h6\s*\{\s*font-size:\s*14px\s*;\s*line-height:\s*22px/.test(docs),
+    'H6 must be 14/22px');
+  assert.match(css, /--docs-h1-size:\s*36px/);
+  assert.match(css, /--docs-h2-size:\s*28px/);
+});
