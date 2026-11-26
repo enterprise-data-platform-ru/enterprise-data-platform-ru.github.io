@@ -267,3 +267,20 @@
 - VISUAL_VALIDATION: NOT_RUN — реальная проверка в браузере не проводилась (браузер недоступен в среде); подмена статическим HTML-контрактным анализом (`verify-html.py` в обоих basePath, контракт пропущен как «not browser validation»).
 - Статус FIX-04: НЕ объявлен выполненным — структурное упрощение каталога остаётся отдельной задачей. План не изменён, не переходили к другим FIX. `git push` не выполнялся.
 - Коммит по плану (владельцем после проверки): `style(docs): unify catalog and MDX typography`.
+
+Следующая выполнена: **FIX-04 — Компактный каталог документации (завершена, автопроверки пройдены)**. Дата: 26.11.2026. Рабочая ветка: `fix/fix-04-compact-catalog`.
+
+### Изменения
+
+- `src/app/docs/page.jsx`: полная переписанная структура. Убран маркетинговый hero (`.docs-hero`), длинная вводная часть (`.docs-start`). Новая структура: `docs-lead` (краткая подсказка), `docs-start-card` (один блок "Начните здесь" с ссылкой на `getGettingStarted()`), `docs-cards` (сетка карточек из `docs` массива `site.mjs` с бейджем статуса `getSectionStatus()`, topics, published-карточки как `<a>`, non-published как `<article>`), `docs-published` (раздел "Другие материалы" — опубликованные документы, не вошедшие в каталог, с дедупликацией `getGettingStarted()` и каталог-слегов), `docs-note` (подсказка про контакт). Все ссылки через `linkHref`. `DocsLayout` не изменён.
+- `src/app/docs/docs.css`: заменён блок старых стилей (`.docs-hero`, `.docs-start`, `.docs-start-link`, `.docs-list-intro`, `.docs-start-empty`, `.arrow`) на новые: `.docs-lead`, `.docs-start-card`, `.docs-start-label`, `.docs-cards`, `.docs-card`, `.docs-card--published`, `.docs-topics`, `.docs-topic`, `.docs-card-status`, `.docs-note`, `.docs-published`. Мобильная адаптация: `@media (max-width: 639px)` — `.docs-cards` в одну колонку, gap 14px. Все токены из `globals.css` (`--green`, `--ink`, `--muted`, `--line`, `--mono`, `--docs-note`, `--docs-sidebar-bg`, `--docs-active`).
+- `tests/docs.test.mjs`: добавлены 7 регрессионных тестов: (1) компактная структура — нет `.docs-hero`, есть `.docs-start-card` и `.docs-cards`; (2) использование `getGettingStarted`/`getSectionStatus`; (3) CSS определяет новые классы; (4) дедупликация getting-started из "Других материалов"; (5) корректные статусы (Доступно/В разработке/Скоро); (6) один H1, нет hero и старых `.docs-start`.
+
+### Автопроверки
+
+- `npm test` — 59/59 PASS (fail 0, cancelled 0, skipped 0, todo 0).
+- `npm run build` — production сборка успешно (7 routes: `/`, `/_not-found`, `/docs`, `/docs/overview`, `/robots.txt`, `/sitemap.xml` + static assets).
+- `npm run check:export` — PASS (91 local asset references, 6 HTML files, basePath=/).
+- `git diff --check` — whitespace clean.
+- Ветка: `fix/fix-04-compact-catalog`. Изменены 4 файла: `src/app/docs/page.jsx`, `src/app/docs/docs.css`, `tests/docs.test.mjs`, `docs/IMPLEMENTATION-STATE.md`.
+- `git push` не выполнялся. Отдельная от других FIX. Отдельная от реорганизации доменов (FIX-02).

@@ -15,80 +15,122 @@ export const metadata = {
 export default function DocsIndexPage() {
   const published = getPublishedDocs();
   const start = getGettingStarted();
+
+  // Catalog slugs that already appear as section cards
+  const catalogSlugs = new Set(
+    docs
+      .filter(card => getSectionStatus(card.slug) === 'published')
+      .map(card => card.slug),
+  );
+
+  // Additional published materials that are not the getting-started card
+  // and are not already shown as catalog section cards.
+  const otherMaterials = published.filter(
+    entry =>
+      entry.slug !== start?.slug &&
+      !catalogSlugs.has(entry.slug),
+  );
+
+  const statusLabel = {
+    published: 'Доступно',
+    draft: 'В разработке',
+    planned: 'Скоро',
+  };
+
   return (
     <DocsLayout variant="index" currentSlug="">
-      <section className="docs-hero" aria-labelledby="docs-heading">
-        <h1 id="docs-heading">Документация</h1>
-        <p className="lead">
-          Материалы по архитектуре, компонентам, безопасности и эксплуатации
-          Enterprise Data Platform. Каждый раздел описывает назначение,
-          границы и ключевые решения.
-        </p>
-      </section>
+      <h1>Документация платформы</h1>
+      <p className="docs-lead">
+        Материалы по архитектуре, компонентам, безопасности и эксплуатации
+        Enterprise Data Platform. Каждый раздел описывает назначение,
+        границы и ключевые решения.
+      </p>
 
-      <section className="docs-start" aria-labelledby="docs-start">
-        <h2 id="docs-start">Начать работу</h2>
-        {start ? (
-          <a className="docs-start-link" href={linkHref(docPath(start.slug))}>
-            <span>{start.title}</span>
-            <small>Первый шаг по документации</small>
-            <span className="arrow" aria-hidden="true">→</span>
-          </a>
-        ) : (
-          <p className="docs-start-empty">Материал находится в работе.</p>
-        )}
-      </section>
+      {/* Getting-started card */}
+      {start && (
+        <a
+          className="docs-start-card"
+          href={linkHref(docPath(start.slug))}
+        >
+          <span className="docs-start-label">
+            Начало работы
+          </span>
 
-      <section className="docs-list" aria-labelledby="docs-catalog">
-        <h2 id="docs-catalog">Содержание документации</h2>
-        <p className="docs-list-intro">
-          Разделы платформы. Публикуемые материалы открываются по ссылке,
-          планируемые обозначены как предстоящие.
-        </p>
+          <h2>
+            {start.title}
+            <span aria-hidden="true"> →</span>
+          </h2>
+
+          <p>
+            Назначение, границы и ключевые
+            решения платформы.
+          </p>
+        </a>
+      )}
+
+      {/* Other published materials (compact list) */}
+      {otherMaterials.length > 0 && (
+        <section className="docs-published">
+          <h2>Другие материалы</h2>
+          <ul className="docs-list">
+            {otherMaterials.map((entry) => (
+              <li key={entry.slug}>
+                <a href={linkHref(docPath(entry.slug))}>
+                  {entry.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Catalog of section cards */}
+      <section className="docs-catalog-section">
+        <h2>Разделы документации</h2>
         <div className="docs-cards">
           {docs.map((card) => {
             const status = getSectionStatus(card.slug);
             const isPublished = status === 'published';
-            const content = (
+            const label = statusLabel[status] || status;
+
+            const inner = (
               <>
-                <span className="docs-card-tag">{card.code}</span>
+                <span className="docs-card-status">{label}</span>
                 <h3>{card.title}</h3>
                 <p>{card.description}</p>
-                <span className="docs-card-status">
-                  {isPublished ? 'Доступно' : status === 'draft' ? 'В работе' : 'В планах'}
-                </span>
+                {card.topics && card.topics.length > 0 && (
+                  <div className="docs-topics">
+                    {card.topics.map((topic) => (
+                      <span key={topic} className="docs-topic">{topic}</span>
+                    ))}
+                  </div>
+                )}
               </>
             );
+
             return isPublished ? (
-              <a key={card.code} className="docs-card docs-card--published" href={linkHref(docPath(card.slug))}>
-                {content}
+              <a
+                key={card.code}
+                className="docs-card docs-card--published"
+                href={linkHref(docPath(card.slug))}
+              >
+                {inner}
               </a>
             ) : (
-              <article key={card.code} className="docs-card">{content}</article>
+              <article key={card.code} className="docs-card">
+                {inner}
+              </article>
             );
           })}
         </div>
       </section>
 
-      {published.length > 0 && (
-        <section className="docs-published" aria-labelledby="docs-published">
-          <h2 id="docs-published">Опубликованные материалы</h2>
-          <div className="docs-cards">
-            {published.map((entry) => (
-              <a key={entry.slug} className="docs-card docs-card--published" href={linkHref(docPath(entry.slug))}>
-                <span className="docs-card-tag">{entry.section}</span>
-                <h3>{entry.title}</h3>
-                {entry.summary && <p>{entry.summary}</p>}
-                <span className="arrow" aria-hidden="true">→</span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <aside className="docs-note" aria-label="О статусе документации">
-        <p><strong>Статус:</strong> документация находится в разработке и будет дополняться.</p>
-      </aside>
+      {/* Note */}
+      <p className="docs-note">
+        Документация находится в разработке и будет дополняться.
+        По вопросам сотрудничества —{' '}
+        <a href={linkHref('#contact')}>связаться с нами</a>.
+      </p>
     </DocsLayout>
   );
 }
