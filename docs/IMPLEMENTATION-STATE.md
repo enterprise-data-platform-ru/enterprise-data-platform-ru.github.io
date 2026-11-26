@@ -314,13 +314,22 @@
 - VISUAL_VALIDATION: NOT_RUN — браузер недоступен в среде; подмена статическим анализом: правка ограничена одной декларацией margin, не затрагивает layout-сетку `docs-shell`, padding и breakpoints, поэтому адаптивность и отсутствие горизонтального переполнения сохраняются. Ручная проверка обеих страниц при одинаковом viewport и масштабе 100% отложена владельцу.
 - `git commit` и `git push` не выполнялись (запрещено заданием). Не переходили к следующим FIX.
 
+Следующая выполнена: **FIX-05-R4 — устранение hydration error для нативных MDX-таблиц (автопроверки пройдены, браузерная проверка отложена)**. Дата: 26.11.2026. Ветка `main`, базовый коммит `6340537` (FIX-05-R3). Задача являлась проверкой/приёмкой: корректное состояние уже закоммичено, кодовых правок не потребовалось.
+- Причина: на `/docs/style-preview/` оставался hydration error `whitespace text nodes cannot be a child of tbody`. Корень — нативная JSX-таблица в `src/app/docs/style-preview/page.mdx` обходит зарегистрированные компоненты нормализации (внутри явного `div.docs-table-scroll` рендерится «сырой» `<table>`, а не `DocsTable`); многострочный JSX-источник порождает whitespace-текстовые узлы между `<tbody>` и `<tr>` (и между `<table>`/`<thead>`), которые React запрещает как детей `tbody`/`thead`.
+- Итоговое решение (уже в HEAD, правки не вносились): (a) нативная JSX-таблица свёрнута в одну строку в `page.mdx` (коммит `8c50841` «collapse native JSX table to a single line») — межэлементного whitespace нет; (b) Markdown-таблицы (GFM) проходят через `DocsTable` с рекурсивной чисткой `cleanTableChildren`/`rebuildTableElement` по набору `TABLE_STRUCTURE_TAGS` (`thead`/`tbody`/`tfoot`/`tr`/`caption`/`colgroup`/`col`), убирающей whitespace-only строки на каждом структурном уровне без изменения содержимого ячеек `th`/`td` (FIX-05-R2, сохранён).
+- Проверка: строгий HTML-инвариант на prerendered `out/docs/style-preview/index.html` — **0** текстовых/whitespace-узлов как прямых детей `tbody`/`thead`/`tfoot`/`tr` (4 `tbody`, 4 `thead`, 19 `tr` сбалансированы, 1 `caption`); `caption` и `colSpan` присутствуют и рендерятся (нативная таблица: `caption` «Таблица 1 — Демонстрационные параметры среды», `colSpan="3"`, `th scope="row"`); `suppressHydrationWarning` отсутствует; новых зависимостей нет; `docs.css` не изменён (FIX-05-R2/R3 сохранены); `mdxType: 'gfm'` сохранён.
+- `git diff --check` — чисто. `npm test` — 69/69 PASS (fail 0, cancelled 0, skipped 0, todo 0). Production `build`+`check:export` PASS (basePath=/, 8 статических страниц, `/docs/style-preview` входит в экспорт). Изменённый файл — только этот журнал.
+- Критерии приёмки: 7/7 выполнены (отсутствие whitespace-узлов в `tbody`/`thead`/`tfoot`/`tr`; отсутствие `suppressHydrationWarning`; рендеринг обычных и широких Markdown-таблиц; нативная HTML-таблица с `caption` и `colSpan`; сохранение стилей; отсутствие новых зависимостей; сохранение FIX-05-R2).
+- VISUAL_VALIDATION: NOT_RUN — браузер недоступен в среде; проверка отсутствия `whitespace text node` в консоли браузера отложена владельцу. Статический HTML-контракт подтверждён чистым (0 нарушений инварианта). `git commit` и `git push` не выполнялись (запрещено заданием). Не переходили к FIX-05-R5/FIX-06.
+- Коммит по плану (владельцем после браузерной проверки): `fix(docs): eliminate hydration whitespace in native MDX tables`.
+
 ### Изменённые файлы (последний раз)
 
 | Файл | Статус | Замечание |
 |---|---|---|
 | `mdx-components.js` | M | Добавлен компонент `Note` (callout): `variant` (info/warning/danger/tip), `role="note"`, классы `docs-callout` / `docs-callout--{variant}`, опциональный `docs-callout-title`. Использует `createElement`, экспортируется в `components` как `note`. SHA `71be52d9…` (manifest `6d2cb1ae…`, расхождение ожидаемо). |
 | `tests/docs.test.mjs` | M | Добавлено 8 регрессионных тестов (53→61, итого 67): scoping `#docs-content` (h1–h4, p, ul, ol, a, blockquote, pre, table, img, figure, callout variants), отсутствие утечки в глобальные селекторы, DocsTable ARIA region wrapper, Note компонент, дизайн-токены, table scroll + zebra, code block + inline code, callout variants. |
-| `docs/IMPLEMENTATION-STATE.md` | M | Этот файл. Записи FIX-05 и FIX-05-R3 добавлены; таблица обновлена под FIX-05-R3. |
+| `docs/IMPLEMENTATION-STATE.md` | M | Этот файл. Записи FIX-05, FIX-05-R3 и FIX-05-R4 добавлены; таблица обновлена под FIX-05-R3; под FIX-05-R4 изменён только этот журнал. |
 | `src/app/docs/docs.css` | M | FIX-05-R3: в `.docs-article, .docs-catalog` `margin-inline: auto` → `margin-inline: 0 auto` (единое выравнивание левых границ статьи и каталога). Одна строка. |
 | `src/app/globals.css` | — | Не изменён (read-only). |
 | `src/components/DocsLayout.jsx` | — | Не изменён (read-only, SHA `e4961fdd…`). |
