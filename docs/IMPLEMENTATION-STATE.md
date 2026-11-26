@@ -258,3 +258,12 @@
 - VISUAL_VALIDATION: NOT_RUN — браузер недоступен в этой среде; подмена статическим анализом (HTML-контракт `out/docs/` и `out/docs/overview/` в обоих basePath) выполнена, ручная проверка в браузере отложена владельцу.
 - `git push` не выполнялся.
 - Коммит по плану (владельцем): `fix(docs): resolve shared layout and metadata regressions`.
+
+Следующая выполнена: **FIX-05 + визуальное согласование каталога (часть FIX-04, стили)** — установка готового пакета стилей и автопроверки пройдены (дата 26.11.2026).
+- Базовый коммит: `dfba4f2` (`fix(docs): resolve shared layout and metadata regressions`), ветка `main`; предусловие FIX-03-R1 установлено. Установка выполнена пакетом `edp-docs-style-v2/install.sh` (preflight `apply.py` без изменений → `--apply` → `--check-installed`), бэкап исходных файлов в `/var/folders/.../edp-docs-style-backup-44zxs330`.
+- Изменены только два файла (read-only контракты manifest `contracts` совпали с проверяемым SHA и не перезаписаны): `src/app/docs/docs.css` и `mdx-components.js`. Изменения в `git`: `M src/app/docs/docs.css` (+190/−16), `M mdx-components.js` (+17/−... ); пользовательские незакоммиченные файлы не тронуты.
+- Проверки (`edp-docs-style-v2/verify.sh`, exit 0): `git diff --check` PASS; `npm test` PASS — 53/53 (fail 0, cancelled 0, skipped 0, todo 0); production `build`+`check:export` PASS (basePath=/, 91 local asset refs / 6 HTML); `verify-html.py` HTML PASS /docs/ и /docs/overview/ (basePath=/); project `build`+`check:export` PASS (basePath=/edp-test, 91 refs / 6 HTML); `verify-html.py` HTML PASS (basePath=/edp-test); восстановление production `build`+`check:export`+HTML PASS (basePath=/). Production-экспорт восстановлен (текущий `out/`).
+- Согласование с владельцем: перед сборкой был остановлен запущенный `next dev` (конкурирующий процесс Next.js на том же `.next/`); сборки выполнялись без него. Dev-сервер останавливал владелец по запросу.
+- VISUAL_VALIDATION: NOT_RUN — реальная проверка в браузере не проводилась (браузер недоступен в среде); подмена статическим HTML-контрактным анализом (`verify-html.py` в обоих basePath, контракт пропущен как «not browser validation»).
+- Статус FIX-04: НЕ объявлен выполненным — структурное упрощение каталога остаётся отдельной задачей. План не изменён, не переходили к другим FIX. `git push` не выполнялся.
+- Коммит по плану (владельцем после проверки): `style(docs): unify catalog and MDX typography`.

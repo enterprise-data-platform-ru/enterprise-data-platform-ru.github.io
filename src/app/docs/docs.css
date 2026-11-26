@@ -1,10 +1,24 @@
-/* FIX-03-R1: shared documentation shell. Keep every selector docs-scoped. */
+/* FIX-04/05: shared documentation visual system. Keep selectors docs-scoped. */
 .docs-shell {
   --docs-header-height: 77px;
   --docs-sidebar-width: 256px;
   --docs-toc-width: 224px;
   --docs-content-width: 820px;
   --docs-layout-width: 1600px;
+  --docs-heading: var(--ink);
+  --docs-text: #334640;
+  --docs-muted: var(--muted);
+  --docs-primary: var(--green);
+  --docs-border: var(--line);
+  --docs-surface: var(--white);
+  --docs-sidebar-bg: #f0f3ef;
+  --docs-active: #dcebd7;
+  --docs-note: #edf4e9;
+  --docs-radius: 8px;
+  --docs-h1-size: 36px;
+  --docs-h1-line: 44px;
+  --docs-h2-size: 28px;
+  --docs-h2-line: 36px;
   display: grid;
   grid-template-columns: var(--docs-sidebar-width) minmax(0, 1fr) var(--docs-toc-width);
   max-width: var(--docs-layout-width);
@@ -37,6 +51,7 @@
   font-size: 13px;
   line-height: 20px;
   margin-bottom: 24px;
+  color: var(--docs-muted);
 }
 .docs-breadcrumb a { color: var(--green); text-decoration: none; }
 .docs-breadcrumb a:hover { text-decoration: underline; }
@@ -47,7 +62,7 @@
   min-width: 0;
   align-self: stretch;
   padding: 24px 16px;
-  background: #f0f3ef;
+  background: var(--docs-sidebar-bg);
   border-right: 1px solid var(--line);
 }
 .docs-nav-title {
@@ -86,7 +101,7 @@
 }
 .docs-nav-item a:hover { background: #e6ede2; color: var(--green); }
 .docs-nav-item a[aria-current="page"] {
-  background: #dcebd7;
+  background: var(--docs-active);
   color: var(--green);
   font-weight: 600;
 }
@@ -100,12 +115,161 @@
 }
 .docs-shell :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
 
-/* Existing article behaviour; full MDX typography is FIX-05. */
-.docs-article pre { max-width: 100%; overflow-x: auto; }
-.docs-article h2, .docs-article h3 { scroll-margin-top: 12px; }
+/* Shared heading scale: the catalog and MDX article start on the same baseline. */
+.docs-shell .docs-hero h1,
+.docs-shell #docs-content h1 {
+  color: var(--docs-heading);
+  font-size: var(--docs-h1-size);
+  line-height: var(--docs-h1-line);
+  font-weight: 650;
+  letter-spacing: -.025em;
+  margin: 0 0 16px;
+}
+.docs-shell .docs-catalog h2,
+.docs-shell #docs-content h2 {
+  color: var(--docs-heading);
+  font-size: var(--docs-h2-size);
+  line-height: var(--docs-h2-line);
+  font-weight: 600;
+  letter-spacing: -.015em;
+}
+/* MDX body: never target the site-wide Header, Footer, or catalog cards. */
+.docs-shell #docs-content {
+  color: var(--docs-text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.docs-shell #docs-content > :last-child { margin-bottom: 0; }
+.docs-shell #docs-content h2 { margin: 40px 0 16px; }
+.docs-shell #docs-content h3 { font-size: 22px; line-height: 30px; margin: 28px 0 12px; }
+.docs-shell #docs-content h4 { font-size: 18px; line-height: 26px; margin: 24px 0 12px; }
+.docs-shell #docs-content h5,
+.docs-shell #docs-content h6 { font-size: 16px; line-height: 24px; margin: 24px 0 8px; }
+.docs-shell #docs-content h3,
+.docs-shell #docs-content h4,
+.docs-shell #docs-content h5,
+.docs-shell #docs-content h6 {
+  color: var(--docs-heading);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+/* Global html already provides scroll-padding-top:90px; only add a small margin. */
+.docs-shell #docs-content :is(h1,h2,h3,h4,h5,h6),
+.docs-shell #docs-content a[id] { scroll-margin-top: 12px; }
+.docs-shell #docs-content p { color: inherit; margin: 0 0 16px; font-size: 16px; line-height: 28px; }
+.docs-shell #docs-content > h1 + p { color: var(--docs-muted); }
+.docs-shell #docs-content strong { color: var(--docs-heading); font-weight: 650; }
+.docs-shell #docs-content a[href] { color: var(--docs-primary); text-decoration: underline; text-underline-offset: 3px; }
+.docs-shell #docs-content a[href]:hover { color: #194638; }
+.docs-shell #docs-content ul,
+.docs-shell #docs-content ol { margin: 16px 0 24px; padding-inline-start: 24px; }
+.docs-shell #docs-content ul { list-style: disc; }
+.docs-shell #docs-content ol { list-style: decimal; }
+.docs-shell #docs-content li { margin: 0 0 6px; padding-inline-start: 2px; }
+.docs-shell #docs-content li::marker { color: var(--docs-primary); }
+.docs-shell #docs-content li > :is(ul,ol) { margin: 6px 0 8px; }
+.docs-shell #docs-content li > p { margin: 0 0 8px; }
+.docs-shell #docs-content dl { margin: 16px 0 24px; }
+.docs-shell #docs-content dt { font-weight: 600; color: var(--docs-heading); }
+.docs-shell #docs-content dd { margin: 4px 0 12px 24px; }
+.docs-shell #docs-content hr { border: 0; border-top: 1px solid var(--docs-border); margin: 32px 0; }
+.docs-shell #docs-content blockquote {
+  margin: 24px 0;
+  padding: 16px 20px;
+  border-left: 3px solid var(--docs-primary);
+  border-radius: 0 6px 6px 0;
+  background: var(--docs-note);
+}
+.docs-shell #docs-content blockquote > :last-child { margin-bottom: 0; }
+.docs-shell #docs-content :not(pre) > code,
+.docs-shell #docs-content kbd {
+  font-family: var(--mono);
+  font-size: .875em;
+  padding: 2px 5px;
+  border: 1px solid var(--docs-border);
+  border-radius: 4px;
+  color: var(--docs-primary);
+  background: var(--paper);
+  overflow-wrap: anywhere;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.docs-shell #docs-content pre {
+  margin: 24px 0;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: var(--docs-radius);
+  background: var(--dark);
+  color: #e2e8f0;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 22px;
+  tab-size: 2;
+  white-space: pre;
+  overflow-x: auto;
+  overflow-wrap: normal;
+  overscroll-behavior-x: contain;
+}
+.docs-shell #docs-content pre code {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  white-space: inherit;
+  overflow-wrap: normal;
+}
+/* MDX table wrapper preserves native table semantics and confines overflow. */
+.docs-shell #docs-content .docs-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--docs-border);
+  border-radius: 6px;
+  margin: 24px 0;
+}
+.docs-shell #docs-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: left;
+}
+.docs-shell #docs-content caption { padding: 12px 16px; color: var(--docs-muted); text-align: left; }
+.docs-shell #docs-content th,
+.docs-shell #docs-content td { padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--docs-border); }
+.docs-shell #docs-content th { background: var(--docs-sidebar-bg); color: var(--docs-heading); font-weight: 600; }
+.docs-shell #docs-content tbody tr:nth-child(even) { background: #fafbf9; }
+.docs-shell #docs-content tbody tr:last-child > * { border-bottom: 0; }
+.docs-shell #docs-content :is(img,svg,video) { max-width: 100%; height: auto; }
+.docs-shell #docs-content figure { margin: 24px 0; }
+.docs-shell #docs-content figcaption { margin-top: 8px; color: var(--docs-muted); font-size: 13px; line-height: 20px; }
+.docs-shell #docs-content details { margin: 24px 0; padding: 16px; border: 1px solid var(--docs-border); border-radius: 6px; }
+.docs-shell #docs-content summary { color: var(--docs-heading); font-weight: 600; }
+.docs-shell #docs-content details[open] > summary { margin-bottom: 12px; }
+.docs-shell #docs-content .docs-callout {
+  --callout-color: var(--docs-primary);
+  --callout-bg: var(--docs-note);
+  margin: 24px 0;
+  padding: 16px 20px;
+  border-left: 4px solid var(--callout-color);
+  border-radius: 0 6px 6px 0;
+  background: var(--callout-bg);
+}
+.docs-shell #docs-content .docs-callout--warning { --callout-color: #996000; --callout-bg: #fff7e6; }
+.docs-shell #docs-content .docs-callout--danger { --callout-color: #b42318; --callout-bg: #fdecec; }
+.docs-shell #docs-content .docs-callout--tip { --callout-color: #245a8d; --callout-bg: #eaf2fa; }
+.docs-shell #docs-content .docs-callout-title { color: var(--callout-color); font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+.docs-shell #docs-content .docs-callout > :last-child { margin-bottom: 0; }
+
 .docs-toc {
   min-width: 0;
-  padding: 24px 20px;
+  padding: 0 20px 24px;
+  margin-top: 32px;
   border-left: 1px solid var(--line);
 }
 .docs-toc h2 {
@@ -151,11 +315,10 @@
 
 /* Catalog: preserve sections, remove marketing containers and invalid tokens. */
 .docs-hero { padding: 0 0 24px; border-bottom: 1px solid var(--line); }
-.docs-hero h1 { font-size: 36px; line-height: 44px; margin: 0 0 12px; font-weight: 650; }
-.docs-hero p { font-size: 16px; line-height: 26px; max-width: 680px; }
+.docs-hero p { font-size: 16px; line-height: 28px; max-width: 680px; color: var(--docs-muted); }
 .docs-start { padding: 24px 0; border-bottom: 1px solid var(--line); }
 .docs-list, .docs-published { padding: 24px 0; }
-.docs-catalog h2 { font-size: 24px; line-height: 32px; font-weight: 600; margin: 0 0 12px; }
+.docs-catalog h2 { margin: 0 0 12px; }
 .docs-list-intro { color: var(--muted); font-size: 16px; line-height: 26px; }
 .docs-start-empty { color: var(--muted); font-style: italic; }
 .docs-start-link {
@@ -218,7 +381,7 @@
   .docs-shell, .docs-shell--index, .docs-shell--article { grid-template-columns: minmax(0, 1fr); }
   .docs-main { padding: 24px 20px 48px; }
   .docs-sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
-  .docs-hero h1 { font-size: 30px; line-height: 38px; }
+  .docs-shell { --docs-h1-size: 30px; --docs-h1-line: 38px; --docs-h2-size: 24px; --docs-h2-line: 32px; }
 }
 @media (max-width: 820px) {
   .docs-shell { --docs-header-height: 66px; }
@@ -228,7 +391,10 @@
   .docs-cards { grid-template-columns: minmax(0, 1fr); }
   .docs-card { padding: 20px; }
   .docs-start-link { align-items: flex-start; }
-  .docs-hero h1 { font-size: 28px; line-height: 36px; }
+  .docs-shell { --docs-h1-size: 28px; --docs-h1-line: 36px; --docs-h2-size: 23px; --docs-h2-line: 30px; }
+  .docs-shell #docs-content pre { padding: 16px; font-size: 13px; }
+  .docs-shell #docs-content :is(blockquote,.docs-callout) { padding: 12px 16px; }
+  .docs-shell #docs-content :is(th,td) { padding: 10px 12px; }
   .docs-article-nav { flex-direction: column; }
   .docs-article-nav .is-empty { display: none; }
 }
