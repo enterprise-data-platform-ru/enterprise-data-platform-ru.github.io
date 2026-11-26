@@ -305,14 +305,23 @@
 - `git push` не выполнялся. Отдельная от FIX-04 structural catalog и FIX-06.
 - Коммит по плану (владельцем после проверки): `style(docs): standardize technical documentation typography`.
 
+Следующая выполнена: **FIX-05-R3 — Единое выравнивание контента документации (автопроверки пройдены, браузерная проверка отложена)**. Дата: 26.11.2026. Ветка `main`.
+- Причина: на страницах `/docs/` (каталог) и `/docs/overview/` (статья) горизонтальный отступ между Sidebar и основным контентом различался — у `.docs-article` и `.docs-catalog` стояло `margin-inline: auto` при разной максимальной ширине (статья 820px, каталог 1100px), из-за чего контент центрировался и левые границы расходились.
+- `src/app/docs/docs.css`: в правиле `.docs-article, .docs-catalog` заменено `margin-inline: auto` на `margin-inline: 0 auto` (левая граница контента прижата к началу main-колонки, правый отступ остаётся авто). Единое выравнивание при одинаковом viewport.
+- Сохранено: max-width статьи `var(--docs-content-width)` = 820px; max-width каталога 1100px; padding `.docs-main` (`32px 40px 64px`); адаптивные breakpoints (`1199px`, `899px`, `820px`, `639px`); ширина Sidebar `256px` (`224px` при `max-width:1199px`) и TOC `224px`.
+- Не изменялись (read-only): `DocsLayout.jsx`, `globals.css`, MDX-компоненты (`mdx-components.js`), типографика; зависимости не устанавливались.
+- `git diff --check` — чисто. `npm test` — 69/69 PASS (fail 0, cancelled 0, skipped 0, todo 0). Изменён только `src/app/docs/docs.css` (одна строка) и этот журнал.
+- VISUAL_VALIDATION: NOT_RUN — браузер недоступен в среде; подмена статическим анализом: правка ограничена одной декларацией margin, не затрагивает layout-сетку `docs-shell`, padding и breakpoints, поэтому адаптивность и отсутствие горизонтального переполнения сохраняются. Ручная проверка обеих страниц при одинаковом viewport и масштабе 100% отложена владельцу.
+- `git commit` и `git push` не выполнялись (запрещено заданием). Не переходили к следующим FIX.
+
 ### Изменённые файлы (последний раз)
 
 | Файл | Статус | Замечание |
 |---|---|---|
 | `mdx-components.js` | M | Добавлен компонент `Note` (callout): `variant` (info/warning/danger/tip), `role="note"`, классы `docs-callout` / `docs-callout--{variant}`, опциональный `docs-callout-title`. Использует `createElement`, экспортируется в `components` как `note`. SHA `71be52d9…` (manifest `6d2cb1ae…`, расхождение ожидаемо). |
 | `tests/docs.test.mjs` | M | Добавлено 8 регрессионных тестов (53→61, итого 67): scoping `#docs-content` (h1–h4, p, ul, ol, a, blockquote, pre, table, img, figure, callout variants), отсутствие утечки в глобальные селекторы, DocsTable ARIA region wrapper, Note компонент, дизайн-токены, table scroll + zebra, code block + inline code, callout variants. |
-| `docs/IMPLEMENTATION-STATE.md` | M | Этот файл. Запись FIX-05 добавлена в начало. |
-| `src/app/docs/docs.css` | — | Не изменён в этой сессии (SHA `50b38825…`, FIX-04 overlay сохранён). |
+| `docs/IMPLEMENTATION-STATE.md` | M | Этот файл. Записи FIX-05 и FIX-05-R3 добавлены; таблица обновлена под FIX-05-R3. |
+| `src/app/docs/docs.css` | M | FIX-05-R3: в `.docs-article, .docs-catalog` `margin-inline: auto` → `margin-inline: 0 auto` (единое выравнивание левых границ статьи и каталога). Одна строка. |
 | `src/app/globals.css` | — | Не изменён (read-only). |
 | `src/components/DocsLayout.jsx` | — | Не изменён (read-only, SHA `e4961fdd…`). |
 | `src/app/docs/page.jsx` | — | Не изменён (каталог FIX-04, read-only). |

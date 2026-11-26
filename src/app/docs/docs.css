@@ -38,7 +38,7 @@
 .docs-article, .docs-catalog {
   width: 100%;
   min-width: 0;
-  margin-inline: auto;
+  margin-inline: 0 auto;
   overflow-wrap: break-word;
 }
 .docs-article { max-width: var(--docs-content-width); }
