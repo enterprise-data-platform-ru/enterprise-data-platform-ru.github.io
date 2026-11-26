@@ -1,0 +1,394 @@
+import {assetPath, linkHref} from '../../../lib/paths.mjs';
+
+# H1 — Проверка стилей документации
+
+Эталонная страница для визуальной регрессии оформления технических документов Enterprise Data Platform. Все примеры содержат демонстрационные данные и не описывают статус реализации платформы.
+
+Проверяются стили `docs.css` внутри `article#docs-content`, а также рендеринг MDX, семантика HTML и адаптивность. Страница предназначена только для локальной проверки. Не включать её в каталог, sitemap или production-экспорт.
+
+> **Примечание:** после проверки сохраните этот файл как fixture вне `src/app`. Удалите временный маршрут перед релизом. Атрибут `noindex` сам по себе не запрещает публикацию.
+
+## H2 — Заголовки и якоря
+
+Заголовок второго уровня проверяет размер, отступы и цвет. Заголовки H2 и H3 должны появляться в оглавлении.
+
+### H3 — Третий уровень
+
+Абзац после заголовка третьего уровня.
+
+#### H4 — Четвёртый уровень
+
+Абзац после заголовка четвёртого уровня.
+
+##### H5 — Пятый уровень
+
+Абзац после заголовка пятого уровня.
+
+###### H6 — Шестой уровень
+
+Абзац после заголовка шестого уровня.
+
+### <a id="style-preview-anchor" aria-hidden="true"></a>Явный идентификатор
+
+[Перейти к этому заголовку](#style-preview-anchor). Проверьте, что при переходе заголовок не перекрывается Header.
+
+### Повторяющийся заголовок
+
+Первый пример для проверки уникальности автоматически создаваемых идентификаторов.
+
+### Повторяющийся заголовок
+
+Второй пример: идентификатор должен отличаться от первого. H4–H6 не должны попадать в TOC, если его контракт ограничен H2 и H3.
+
+## 2. Абзацы и текстовое форматирование
+
+Короткий абзац.
+
+Длинный абзац с **жирным текстом**, *курсивом*, ***жирным курсивом*** и ~~зачёркнутым текстом~~. При чтении инженерной документации важно сохранять комфортную длину строки, стабильный межстрочный интервал и одинаковые отступы между абзацами. При изменении ширины окна текст должен переноситься без горизонтальной прокрутки страницы.
+
+HTML-форматирование: <mark>выделенный текст</mark>, H<sub>2</sub>O, 2<sup>10</sup>, <abbr title="Service Level Objective">SLO</abbr>.
+
+Встроенный код: `SELECT * FROM data`, `--namespace`, `NEXT_PUBLIC_BASE_PATH`, `const x = 42;`.
+
+Клавиатурные сочетания: <kbd>Ctrl</kbd> + <kbd>C</kbd>, <kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>.
+
+Длинный непрерывный идентификатор:
+
+enterprise-data-platform-documentation-visual-regression-test-identifier-with-a-very-long-component-name-and-no-natural-break-points-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+Длинный встроенный код: `enterprise.data.platform.integration.kafka.connect.debezium.source.connector.configuration.parameters.with.a.very.long.unbroken.identifier`.
+
+## 3. Списки
+
+### Маркированный список
+
+- Kubernetes — оркестрация.
+- Apache Kafka — потоковая интеграция.
+  - Kafka Connect — коннекторы.
+    - Debezium — пример CDC-компонента.
+  - Вложенный пункт второго уровня.
+- Пункт с **выделением**, *курсивом* и `inline code`.
+
+### Нумерованный список
+
+1. Подготовить инфраструктуру.
+2. Проверить конфигурацию.
+   1. Проверить сетевые настройки.
+   2. Проверить настройки хранилища.
+3. Выполнить проверки.
+
+### Список с несколькими абзацами
+
+- Первый пункт содержит основной абзац.
+
+  Дополнительный абзац внутри того же пункта проверяет отступы `li > p`.
+
+- Второй пункт содержит другой абзац.
+
+  - Вложенный список внутри пункта.
+  - Ещё один вложенный пункт.
+
+### Список задач (GFM)
+
+- [x] Проверить базовую типографику.
+- [ ] Проверить широкие таблицы.
+- [ ] Проверить мобильное отображение.
+  - [x] Проверить перенос длинного текста.
+  - [ ] Проверить навигацию с клавиатуры.
+
+### Список определений
+
+<dl>
+  <dt>Lakehouse</dt>
+  <dd>Архитектурный подход, объединяющий возможности озера данных и хранилища данных.</dd>
+  <dt>CDC</dt>
+  <dd>Change Data Capture — фиксация изменений в источнике данных.</dd>
+  <dt>GitOps</dt>
+  <dd>Управление декларативной конфигурацией через Git.</dd>
+</dl>
+
+## 4. Цитаты
+
+> Обычная цитата с одним абзацем и **выделенным текстом**.
+
+> Первый абзац многострочной цитаты.
+>
+> Второй абзац. Последний элемент не должен создавать лишний нижний отступ.
+>
+> - Вложенный список.
+> - Элемент с `inline code`.
+
+## 5. Блоки кода
+
+Блоки с указанием языка и без него должны сохранять пробелы, отступы и переносы исходного кода. Подсветка синтаксиса и кнопка копирования не считаются реализованными, если соответствующие компоненты не подключены.
+
+### SQL
+
+```sql
+-- Demonstration query
+SELECT
+    table_name,
+    COUNT(*) AS row_count
+FROM information_schema.tables
+WHERE table_schema = 'public'
+GROUP BY table_name
+ORDER BY row_count DESC;
+```
+
+### JavaScript
+
+```javascript
+// Demonstration of a navigation item
+function renderSidebar(docs, currentSlug) {
+  return docs.map((doc) => ({
+    title: doc.title,
+    href: `/docs/${doc.slug}/`,
+    active: doc.slug === currentSlug,
+  }));
+}
+```
+
+### Bash
+
+```bash
+npm test
+npm run build
+npm run check:export
+```
+
+### YAML
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: documentation-preview
+  namespace: demo
+data:
+  mode: example
+  enabled: "true"
+```
+
+### JSON
+
+```json
+{
+  "name": "documentation-preview",
+  "enabled": true,
+  "components": ["kafka", "iceberg", "trino"],
+  "settings": {
+    "mode": "demo",
+    "replicas": 3
+  }
+}
+```
+
+### Без указания языка
+
+```
+First line
+    Four spaces of indentation
+        Eight spaces of indentation
+Last line
+```
+
+### Длинная строка — горизонтальная прокрутка
+
+```bash
+kubectl get pods --all-namespaces --output=custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name,IMAGE:.spec.containers[*].image,NODE:.spec.nodeName,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount"
+```
+
+На узком экране должна прокручиваться область `pre`, а не вся страница. Длинная строка не должна переноситься принудительно.
+
+## 6. Таблицы
+
+### Обычная Markdown-таблица (GFM)
+
+| Технология | Категория | Статус примера | Примечание |
+| --- | --- | --- | --- |
+| Apache Iceberg | Хранилище | Demo | Open table format |
+| Apache Spark | Обработка | Demo | Batch / Streaming |
+| Trino | Аналитика | Demo | Interactive SQL |
+| OpenMetadata | Governance | Demo | Metadata management |
+| Argo CD | Deploy | Demo | GitOps |
+| Prometheus | Monitoring | Demo | Metrics |
+
+Проверить заголовки, чередование строк, разделители, нижнюю границу и наличие `.docs-table-scroll`. Статусы в таблице демонстрационные.
+
+### Выравнивание и форматирование ячеек
+
+| Параметр | Единица | Значение | Примечание |
+| :--- | :---: | ---: | :--- |
+| **CPU** | cores | 8 | Демонстрационный параметр |
+| RAM | GiB | 32 | `memory.limit` |
+| Storage | GiB | 256 | *Пример*, не рекомендация |
+
+### Широкая Markdown-таблица
+
+| Компонент | Namespace | Instance | Version | Mode | CPU | RAM | Storage | Network | Replicas | State | Owner | Region | Zone | Policy | Reference |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Kafka | integration | kafka-broker-demo-001 | demo | cluster | 8 | 32 GiB | 500 GiB | internal | 3 | example | platform | lab | a | default | kafka-demo-reference |
+| Trino | analytics | trino-worker-demo-001 | demo | cluster | 8 | 32 GiB | 100 GiB | internal | 3 | example | platform | lab | b | default | trino-demo-reference |
+| Spark | processing | spark-driver-demo-001 | demo | batch | 4 | 16 GiB | 50 GiB | internal | 1 | example | platform | lab | c | default | spark-demo-reference |
+
+Таблица должна сохранять семантику HTML и прокручиваться внутри контейнера. Проверьте клавиатурный фокус обёртки.
+
+### HTML-таблица с подписью
+
+Отдельный тест нативной таблицы, `caption`, объединённых ячеек и заголовков строк. Здесь обёртка задана явно, поскольку буквальная JSX-разметка может обходить MDX mapping для `table`.
+
+<div className="docs-table-scroll" role="region" aria-label="Таблица с подписью" tabIndex={0}>
+  <table>
+    <caption>Таблица 1 — Демонстрационные параметры среды</caption>
+    <thead>
+      <tr><th scope="col">Ресурс</th><th scope="col">Значение</th><th scope="col">Описание</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">CPU</th><td>8</td><td>Пример количества ядер</td></tr>
+      <tr><th scope="row">RAM</th><td>32 GiB</td><td>Пример объёма памяти</td></tr>
+      <tr><td colSpan={3}>Все значения приведены исключительно для проверки оформления.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## 7. Callout-блоки
+
+<DocsCallout type="note" title="Примечание">
+
+  Это информационное примечание с **жирным текстом**, *курсивом* и `inline code`.
+
+  Второй абзац проверяет внутренние отступы.
+
+</DocsCallout>
+
+<DocsCallout type="warning" title="Внимание">
+
+  Перед изменением конфигурации проверьте резервную копию.
+
+</DocsCallout>
+
+<DocsCallout type="danger" title="Опасность">
+
+  Удаление данных может быть необратимым.
+
+</DocsCallout>
+
+<DocsCallout type="tip" title="Рекомендация">
+
+  Используйте декларативное управление конфигурацией.
+
+</DocsCallout>
+
+<DocsCallout>
+
+  Проверка типа и заголовка по умолчанию.
+
+</DocsCallout>
+
+<DocsCallout type="warning">
+
+  Проверка заголовка предупреждения по умолчанию.
+
+  - Вложенный список.
+  - Ссылка на <a href={linkHref('/docs/overview/')}>обзор платформы</a>.
+
+</DocsCallout>
+
+### Контрольный HTML-callout
+
+Этот образец проверяет CSS напрямую, независимо от регистрации `DocsCallout`. Если он оформлен, а предыдущие блоки нет, необходимо проверить MDX-компонент и его классы.
+
+<aside className="docs-callout docs-callout--warning">
+  <p className="docs-callout-title">Контрольный образец</p>
+  <p>Предупреждение с явными CSS-классами.</p>
+</aside>
+
+## 8. Изображения и диаграммы
+
+### Обычное изображение
+
+<img src={assetPath('/platform.svg')} alt="Схема платформы EDP" width={640} height={520} />
+
+### Изображение с подписью
+
+<figure>
+  <img src={assetPath('/platform.svg')} alt="Изометрическая схема слоёв платформы" width={640} height={520} loading="lazy" />
+  <figcaption>Рис. 1 — Схема слоёв платформы из локальных ресурсов проекта.</figcaption>
+</figure>
+
+### Встроенная SVG-диаграмма
+
+<figure>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 170" width={720} height={170} role="img" aria-label="Демонстрационная схема движения данных: источник, интеграция, хранилище">
+    <rect x="10" y="40" width="200" height="90" rx="8" fill="#f0f3ef" stroke="#dce4df" />
+    <rect x="260" y="40" width="200" height="90" rx="8" fill="#edf4e9" stroke="#24594a" />
+    <rect x="510" y="40" width="200" height="90" rx="8" fill="#f0f3ef" stroke="#dce4df" />
+    <path d="M210 85 H250 L240 77 M250 85 L240 93 M460 85 H500 L490 77 M500 85 L490 93" fill="none" stroke="#24594a" strokeWidth="2" />
+    <text x="110" y="90" textAnchor="middle" fontSize="17" fill="#12232b">Источник</text>
+    <text x="360" y="90" textAnchor="middle" fontSize="17" fill="#12232b">Интеграция</text>
+    <text x="610" y="90" textAnchor="middle" fontSize="17" fill="#12232b">Хранилище</text>
+  </svg>
+  <figcaption>Рис. 2 — Демонстрационная схема для проверки масштабирования SVG.</figcaption>
+</figure>
+
+### Видео — проверка размеров
+
+<figure>
+  <video width={720} height={405} poster={assetPath('/og.png')} preload="none" aria-label="Тест размеров видеоэлемента без медиапотока" />
+  <figcaption>Рис. 3 — Проверяется только адаптивный размер видеоэлемента по локальному постеру. В проекте нет тестового видеофайла, воспроизведение не проверяется.</figcaption>
+</figure>
+
+## 9. Раскрывающиеся блоки
+
+<details>
+  <summary>Закрытый блок — нажмите для раскрытия</summary>
+
+  Содержимое закрытого блока с **форматированием** и `inline code`.
+
+  - Первый пункт.
+  - Второй пункт.
+
+</details>
+
+<details open>
+  <summary>Открытый по умолчанию блок</summary>
+
+  Проверка селектора `details[open] > summary`.
+
+  <details>
+    <summary>Вложенный раскрывающийся блок</summary>
+    <p>Вложенное содержимое.</p>
+  </details>
+
+</details>
+
+## 10. Горизонтальный разделитель и ссылки
+
+Абзац перед горизонтальной чертой.
+
+---
+
+Абзац после горизонтальной черты.
+
+- <a href={linkHref('/')}>Главная страница</a>.
+- <a href={linkHref('/docs/')}>Каталог документации</a>.
+- <a href={linkHref('/docs/overview/')}>Обзор платформы</a>.
+- <a href={linkHref('/docs/overview/#naznachenie')}>Обзор платформы — назначение</a>.
+- [Локальный якорь](#style-preview-anchor).
+- [Внешняя ссылка](https://enterprisedataplatform.ru "Enterprise Data Platform").
+- [Пример mailto](mailto:example@example.invalid) — демонстрационный адрес, не контакт проекта.
+
+Проверьте обычное состояние, наведение и клавиатурный фокус ссылок. При непустом basePath локальные ссылки и ресурсы должны получать префикс; внешние ссылки и локальные якоря — нет.
+
+## 11. Финальная проверка
+
+- Заголовки H1–H6 имеют согласованные размеры и отступы.
+- Таблицы и зачёркнутый текст преобразуются GFM-компилятором.
+- Все Callout имеют ожидаемые заголовки, фон и левый акцент.
+- Таблицы и код прокручиваются внутри собственных областей.
+- Изображения, SVG и видеоэлемент не выходят за пределы колонки.
+- Ссылки и раскрывающиеся блоки доступны с клавиатуры.
+- При ширине 360, 390, 768, 1024, 1280, 1440 и 1920 px нет горизонтальной прокрутки всей страницы.
+- Каталог документации, Sidebar, TOC и переходы между статьями дополнительно проверяются на соответствующих маршрутах.
+
+Последний абзац проверяет отсутствие лишнего нижнего отступа у последнего дочернего элемента статьи.

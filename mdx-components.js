@@ -5,12 +5,53 @@ import {createElement} from 'react';
 function DocsTable(props) {
   return createElement(
     'div',
-    {className: 'docs-table-scroll', tabIndex: 0, role: 'region', 'aria-label': 'Таблица с горизонтальной прокруткой'},
+    {
+      className: 'docs-table-scroll',
+      tabIndex: 0,
+      role: 'region',
+      'aria-label': 'Таблица документации',
+    },
     createElement('table', props),
   );
 }
 
-const components = {table: DocsTable};
+const calloutTitles = {
+  note: 'Примечание',
+  warning: 'Внимание',
+  danger: 'Опасность',
+  tip: 'Рекомендация',
+};
+
+function DocsCallout({
+  type = 'note',
+  title,
+  children,
+}) {
+  const variant = Object.hasOwn(
+    calloutTitles,
+    type,
+  ) ? type : 'note';
+
+  const className = variant === 'note'
+    ? 'docs-callout'
+    : `docs-callout docs-callout--${variant}`;
+
+  return createElement(
+    'aside',
+    {className},
+    createElement(
+      'p',
+      {className: 'docs-callout-title'},
+      title ?? calloutTitles[variant],
+    ),
+    children,
+  );
+}
+
+const components = {
+  table: DocsTable,
+  DocsCallout,
+};
 
 export function useMDXComponents() {
   return components;

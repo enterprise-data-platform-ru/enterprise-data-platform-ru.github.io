@@ -353,3 +353,153 @@ test('docs index has a single H1 and no marketing sections', () => {
   assert.ok(!/className="docs-start-empty"/.test(docsPageSrc),
     'docs index must not have old docs-start-empty section');
 });
+
+// FIX-05 MDX article style contract: CSS is scoped to #docs-content, MDX
+// components provide accessible table and callout wrappers, and the style
+// uses design tokens without leaking into global selectors.
+const mdxComponentsSrc = readFileSync(new URL('../mdx-components.js', import.meta.url), 'utf8');
+
+test('docs CSS scopes MDX article typography to #docs-content', () => {
+  // H1 through H4 must be scoped under #docs-content, not global.
+  assert.ok(/#docs-content\s+h1\b/.test(docsCssSrc),
+    'CSS must scope h1 to #docs-content');
+  assert.ok(/#docs-content\s+h2\b/.test(docsCssSrc),
+    'CSS must scope h2 to #docs-content');
+  assert.ok(/#docs-content\s+h3\b/.test(docsCssSrc),
+    'CSS must scope h3 to #docs-content');
+  assert.ok(/#docs-content\s+h4\b/.test(docsCssSrc),
+    'CSS must scope h4 to #docs-content');
+  // Paragraph, lists, and links must be scoped under #docs-content.
+  assert.ok(/#docs-content\s+p\b/.test(docsCssSrc),
+    'CSS must scope p to #docs-content');
+  assert.ok(/#docs-content\s+ul\b/.test(docsCssSrc),
+    'CSS must scope ul to #docs-content');
+  assert.ok(/#docs-content\s+ol\b/.test(docsCssSrc),
+    'CSS must scope ol to #docs-content');
+  assert.ok(/#docs-content\s+a\b/.test(docsCssSrc),
+    'CSS must scope a to #docs-content');
+  // Blockquote, code, and table must be scoped under #docs-content.
+  assert.ok(/#docs-content\s+blockquote\b/.test(docsCssSrc),
+    'CSS must scope blockquote to #docs-content');
+  assert.ok(/#docs-content\s+pre\b/.test(docsCssSrc),
+    'CSS must scope pre to #docs-content');
+  assert.ok(/#docs-content\s+table\b/.test(docsCssSrc),
+    'CSS must scope table to #docs-content');
+  // Images and figures must be scoped under #docs-content.
+  assert.ok(/#docs-content.*img/.test(docsCssSrc),
+    'CSS must scope img to #docs-content');
+  assert.ok(/#docs-content\s+figure\b/.test(docsCssSrc),
+    'CSS must scope figure to #docs-content');
+  // Callout variants must be defined.
+  assert.ok(/\.docs-callout\b/.test(docsCssSrc),
+    'CSS must define .docs-callout');
+  assert.ok(/\.docs-callout--warning\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--warning');
+  assert.ok(/\.docs-callout--danger\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--danger');
+  assert.ok(/\.docs-callout--tip\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--tip');
+});
+
+test('docs CSS does not leak MDX styles into global selectors', () => {
+  // No bare h1/h2/h3/h4/p/table/pre/code selectors outside #docs-content scope.
+  // Allow: .docs-hero h1 (legacy), .docs-card h3 (catalog), .docs-toc h2 (TOC).
+  const lines = docsCssSrc.split('\n');
+  let inScope = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Track when we enter a #docs-content or .docs-article block.
+    if (/^\s*#docs-content\s/.test(trimmed) || /^\.docs-article\s/.test(trimmed)) {
+      inScope = true;
+    }
+    // Detect bare global selectors that are not inside a scoped context.
+    if (/^\s*h[1-4]\s*[,{]/.test(trimmed) && !inScope) {
+      assert.fail(`Bare global heading selector found: ${trimmed}`);
+    }
+    if (/^\s*p\s*[,{]/.test(trimmed) && !inScope) {
+      assert.fail(`Bare global paragraph selector found: ${trimmed}`);
+    }
+    if (/^\s+table\s*[,{]/.test(trimmed) && !inScope) {
+      assert.fail(`Bare global table selector found: ${trimmed}`);
+    }
+    // Reset scope at closing brace of a rule.
+    if (/^\s*\}/.test(trimmed)) {
+      inScope = false;
+    }
+  }
+});
+
+test('mdx-components exports DocsTable with ARIA region wrapper', () => {
+  assert.ok(/DocsTable/.test(mdxComponentsSrc),
+    'mdx-components must define DocsTable');
+  assert.ok(/docs-table-scroll/.test(mdxComponentsSrc),
+    'DocsTable must render .docs-table-scroll wrapper');
+  assert.ok(/role\s*[:=]\s*['"]region['"]/.test(mdxComponentsSrc),
+    'DocsTable must set role="region"');
+  assert.ok(/aria-label/.test(mdxComponentsSrc),
+    'DocsTable must set aria-label');
+});
+
+test('mdx-components exports DocsCallout (callout) component', () => {
+  assert.ok(/DocsCallout/.test(mdxComponentsSrc),
+    'mdx-components must define DocsCallout');
+  assert.ok(/docs-callout/.test(mdxComponentsSrc),
+    'DocsCallout must render .docs-callout class');
+  assert.ok(/docs-callout--/.test(mdxComponentsSrc),
+    'DocsCallout must render variant modifier class');
+  assert.ok(/calloutTitles/.test(mdxComponentsSrc),
+    'DocsCallout must map default titles by type');
+  assert.ok(/type/.test(mdxComponentsSrc),
+    'DocsCallout must support type prop');
+});
+
+test('docs CSS uses design tokens for article typography', () => {
+  // Core tokens must appear in the MDX article style block.
+  assert.ok(/var\(--ink\)/.test(docsCssSrc),
+    'CSS must use --ink token');
+  assert.ok(/var\(--muted\)/.test(docsCssSrc),
+    'CSS must use --muted token');
+  assert.ok(/var\(--green\)/.test(docsCssSrc),
+    'CSS must use --green token');
+  assert.ok(/var\(--line\)/.test(docsCssSrc),
+    'CSS must use --line token');
+  assert.ok(/var\(--white\)/.test(docsCssSrc),
+    'CSS must use --white token');
+  assert.ok(/var\(--mono\)/.test(docsCssSrc),
+    'CSS must use --mono token');
+});
+
+test('docs CSS defines table scroll wrapper and zebra striping', () => {
+  assert.ok(/\.docs-table-scroll\b/.test(docsCssSrc),
+    'CSS must define .docs-table-scroll');
+  assert.ok(/overflow-x\s*:\s*auto/.test(docsCssSrc),
+    'table wrapper must enable horizontal scrolling');
+  assert.ok(/tbody\s+tr:nth-child\(even\)/.test(docsCssSrc),
+    'CSS must define zebra striping for table rows');
+});
+
+test('docs CSS defines code block and inline code styles', () => {
+  assert.ok(/#docs-content\s+pre\b/.test(docsCssSrc),
+    'CSS must style pre in #docs-content');
+  // Inline code uses a compound selector (not bare #docs-content code).
+  assert.ok(/#docs-content\s+pre code/.test(docsCssSrc),
+    'CSS must style pre code in #docs-content');
+  assert.ok(/#docs-content\s+:not\(pre\)\s*>\s*code/.test(docsCssSrc),
+    'CSS must style inline code in #docs-content');
+  // Pre should have a dark background (code block).
+  assert.ok(/background\s*:\s*#/.test(docsCssSrc),
+    'code block must have a background color');
+});
+
+test('docs CSS defines callout/note styles with variants', () => {
+  assert.ok(/\.docs-callout\b/.test(docsCssSrc),
+    'CSS must define .docs-callout');
+  assert.ok(/\.docs-callout--warning\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--warning');
+  assert.ok(/\.docs-callout--danger\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--danger');
+  assert.ok(/\.docs-callout--tip\b/.test(docsCssSrc),
+    'CSS must define .docs-callout--tip');
+  assert.ok(/\.docs-callout-title\b/.test(docsCssSrc),
+    'CSS must define .docs-callout-title');
+});

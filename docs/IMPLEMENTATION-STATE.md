@@ -259,6 +259,19 @@
 - `git push` не выполнялся.
 - Коммит по плану (владельцем): `fix(docs): resolve shared layout and metadata regressions`.
 
+Следующая выполнена: **FIX-05-R1 — GFM-таблицы и callout-блоки в MDX-документации (автопроверки пройдены)**. Дата: 26.11.2026. Ветка `main`, базовый коммит `8516307` (FIX-05).
+- Причина: таблицы Markdown и блоки callout не рендерились (mdxRs работал без GFM; компонент `Note` был заменён).
+- `next.config.mjs`: `experimental.mdxRs: true` → `experimental.mdxRs: { mdxType: 'gfm' }` — включён GFM-парсинер (таблицы, strikethrough, task-lists). Зависимости не менялись, `remark-gfm` не устанавливался.
+- `mdx-components.js`: переписаны `DocsTable` (обёртка `div.docs-table-scroll` c `role="region"`, `tabIndex`, `aria-label`, вложенный `table`) и `DocsCallout` (заменил `Note`): проп `type` (`note`/`warning`/`danger`/`tip`, дефолт `note`), карта `calloutTitles` (Примечание/Внимание/Опасность/Рекомендация), классы `docs-callout` / `docs-callout--{type}`, опциональный заголовок в `p.docs-callout-title`, `createElement` без JSX. В `components` выводится как `DocsCallout`.
+- `tests/docs.test.mjs`: устаревший тест `Note (callout) component` обновлён под новый API (`DocsCallout`, `type`, `calloutTitles`, `docs-callout--`); всего 67 тестов.
+- `src/app/docs/style-preview/page.mdx`: обновлены вызовы `<note variant>` → `<DocsCallout type>`.
+- CSS callout (`.docs-callout`, `--warning`, `--danger`, `--tip`, `.docs-callout-title`) и table-scroll уже присутствуют в `docs.css` (FIX-05), не изменены.
+- Проверки: `git diff --check` PASS; `npm test` 67/67 PASS; `build`+`check:export` PASS (basePath=/, 124 local asset refs / 7 HTML); style-preview HTML: 1 `docs-table-scroll` + `<table>`, 5 callout-блоков c вариантами и заголовками (дефолтные заголовки корректны), 0 `<note>`.
+- Dev-сервер перезапущен после смены `next.config.mjs` (один чистый инстанс на :3000, HTTP 200 на `/docs/style-preview/`).
+- VISUAL_VALIDATION: NOT_RUN — браузер недоступен в среде; не подменено сборкой. Статичный HTML-контракт подтверждён.
+- `git push` не выполнялся. Отдельная от FIX-06.
+- Коммит по плану (владельцем после проверки): `fix(docs): enable GFM tables and callout blocks in MDX`.
+
 Следующая выполнена: **FIX-05 + визуальное согласование каталога (часть FIX-04, стили)** — установка готового пакета стилей и автопроверки пройдены (дата 26.11.2026).
 - Базовый коммит: `dfba4f2` (`fix(docs): resolve shared layout and metadata regressions`), ветка `main`; предусловие FIX-03-R1 установлено. Установка выполнена пакетом `edp-docs-style-v2/install.sh` (preflight `apply.py` без изменений → `--apply` → `--check-installed`), бэкап исходных файлов в `/var/folders/.../edp-docs-style-backup-44zxs330`.
 - Изменены только два файла (read-only контракты manifest `contracts` совпали с проверяемым SHA и не перезаписаны): `src/app/docs/docs.css` и `mdx-components.js`. Изменения в `git`: `M src/app/docs/docs.css` (+190/−16), `M mdx-components.js` (+17/−... ); пользовательские незакоммиченные файлы не тронуты.
@@ -267,6 +280,30 @@
 - VISUAL_VALIDATION: NOT_RUN — реальная проверка в браузере не проводилась (браузер недоступен в среде); подмена статическим HTML-контрактным анализом (`verify-html.py` в обоих basePath, контракт пропущен как «not browser validation»).
 - Статус FIX-04: НЕ объявлен выполненным — структурное упрощение каталога остаётся отдельной задачей. План не изменён, не переходили к другим FIX. `git push` не выполнялся.
 - Коммит по плану (владельцем после проверки): `style(docs): unify catalog and MDX typography`.
+
+Следующая выполнена: **FIX-05 — Аудит и дополнение стиля MDX-документов (автоматические проверки пройдены)**. Дата: 26.11.2026. Ветка `main`, базовый коммит `1e326b4` (merge FIX-04).
+- Аудит установленного комплекта `edp-docs-style-v2`: CSS-правила из спецификации FIX-05 §6–§14 уже присутствуют в `src/app/docs/docs.css` после установки (commit `8516307`). Селекторы ограничены `#docs-content`, используются токены `--ink`, `--muted`, `--green`, `--line`, `--white`, `--mono`, `--dark`.
+- FIX-04 overlay на `docs.css` (`.docs-start-card` и связанные классы) — намеренное наложение после установки, не отклонение от style-kit. SHA `docs.css` сместился с manifest `323e2765…` на `50b38825…` — ожидаемое расхождение.
+- Добавлен компонент `Note` (callout) в `mdx-components.js`: `variant` (info/warning/danger/tip), `role="note"`, класс `docs-callout` / `docs-callout--{variant}`, опциональный `docs-callout-title`. Использует `createElement` (без JSX), экспортируется в `components` как `note`. SHA `mdx-components.js` сместился с manifest `6d2cb1ae…` на `71be52d9…` — ожидаемое расхождение.
+- Добавлено 8 регрессионных тестов в `tests/docs.test.mjs` (53→61, итого 67 с учётом ранее существующих): scoping `#docs-content` (h1–h4, p, ul, ol, a, blockquote, pre, table, img, figure, callout variants); отсутствие утечки в глобальные селекторы; DocsTable ARIA region wrapper; Note (callout) компонент; дизайн-токены; table scroll wrapper + zebra striping; code block + inline code; callout variants.
+- Не изменены: `globals.css`, `DocsLayout.jsx`, `Sidebar`, `TOC`, `src/app/docs/page.jsx` (каталог FIX-04), опубликованный MDX-контент, `overview/page.mdx`.
+- Проверки: `git diff --check` PASS; `npm test` 67/67 PASS; `build`+`check:export` PASS (basePath=/, 91 local asset refs / 6 HTML).
+- VISUAL_VALIDATION: NOT_RUN — браузер недоступен в среде; не подменено сборкой. Статичный HTML-контракт подтверждён.
+- `git push` не выполнялся. Отдельная от FIX-04 structural catalog и FIX-06.
+- Коммит по плану (владельцем после проверки): `style(docs): standardize technical documentation typography`.
+
+### Изменённые файлы (последний раз)
+
+| Файл | Статус | Замечание |
+|---|---|---|
+| `mdx-components.js` | M | Добавлен компонент `Note` (callout): `variant` (info/warning/danger/tip), `role="note"`, классы `docs-callout` / `docs-callout--{variant}`, опциональный `docs-callout-title`. Использует `createElement`, экспортируется в `components` как `note`. SHA `71be52d9…` (manifest `6d2cb1ae…`, расхождение ожидаемо). |
+| `tests/docs.test.mjs` | M | Добавлено 8 регрессионных тестов (53→61, итого 67): scoping `#docs-content` (h1–h4, p, ul, ol, a, blockquote, pre, table, img, figure, callout variants), отсутствие утечки в глобальные селекторы, DocsTable ARIA region wrapper, Note компонент, дизайн-токены, table scroll + zebra, code block + inline code, callout variants. |
+| `docs/IMPLEMENTATION-STATE.md` | M | Этот файл. Запись FIX-05 добавлена в начало. |
+| `src/app/docs/docs.css` | — | Не изменён в этой сессии (SHA `50b38825…`, FIX-04 overlay сохранён). |
+| `src/app/globals.css` | — | Не изменён (read-only). |
+| `src/components/DocsLayout.jsx` | — | Не изменён (read-only, SHA `e4961fdd…`). |
+| `src/app/docs/page.jsx` | — | Не изменён (каталог FIX-04, read-only). |
+| `src/app/docs/overview/page.mdx` | — | Не изменён (опубликованный MDX-контент, read-only). |
 
 Следующая выполнена: **FIX-04 — Компактный каталог документации (завершена, автопроверки пройдены)**. Дата: 26.11.2026. Рабочая ветка: `fix/fix-04-compact-catalog`.
 

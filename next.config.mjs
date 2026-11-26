@@ -10,7 +10,9 @@ const config = {
   poweredByHeader: false,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   experimental: {
-    mdxRs: true,
+    mdxRs: {
+      mdxType: 'gfm',
+    },
   },
 };
 export default withMDX()(config);
