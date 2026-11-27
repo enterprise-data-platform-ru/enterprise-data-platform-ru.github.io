@@ -1,9 +1,9 @@
 import {test} from 'node:test';
-import {readFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {linkHref} from '../src/lib/paths.mjs';
 import sitemap from '../src/app/sitemap.js';
-import {docsNav, getPublishedDocs, getSectionStatus, getGettingStarted, docPath, getSidebarNav, getArticleNav} from '../src/content/docs/navigation.mjs';
+import {docsNav, getPublishedDocs, getSectionStatus, getGettingStarted, docPath, getSidebarNav, getArticleNav, validateDocsRegistry} from '../src/content/docs/navigation.mjs';
 import {slugifyHeading, uniqueHeadingId} from '../src/lib/heading-slug.mjs';
 import {docs} from '../src/content/site.mjs';
 
@@ -562,4 +562,21 @@ test('docs CSS defines callout/note styles with variants', () => {
     'CSS must define .docs-callout--tip');
   assert.ok(/\.docs-callout-title\b/.test(docsCssSrc),
     'CSS must define .docs-callout-title');
+});
+
+
+test('catalog and registry are consistent and published sources exist', () => {
+  assert.doesNotThrow(() => validateDocsRegistry(docsNav, docs));
+  for (const entry of getPublishedDocs()) assert.ok(existsSync(entry.source), entry.source);
+  assert.equal(getSidebarNav('overview')[0].section, 'Начало работы');
+});
+
+test('registry validation rejects inconsistent entries and cards', () => {
+  assert.throws(() => validateDocsRegistry([...docsNav, docsNav[0]], docs));
+  assert.throws(() => validateDocsRegistry([{...docsNav[0], status: 'unknown'}]));
+  assert.throws(() => validateDocsRegistry([{...docsNav[0], source: 'missing.mdx'}]));
+  assert.throws(() => validateDocsRegistry([{...docsNav[1], source: 'hidden.mdx'}]));
+  assert.throws(() => validateDocsRegistry(docsNav, [{slug: 'missing'}]));
+  assert.throws(() => validateDocsRegistry(docsNav, [docs[0], docs[0]]));
+  assert.throws(() => validateDocsRegistry([{...docsNav[0], slug: '../invalid'}]));
 });

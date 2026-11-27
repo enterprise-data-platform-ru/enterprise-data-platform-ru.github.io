@@ -15,7 +15,7 @@ export const docsNav = [
   {
     slug: 'overview',
     title: 'Обзор платформы',
-    section: 'Обзор',
+    section: 'Начало работы',
     order: 1,
     status: 'published',
     source: 'src/app/docs/overview/page.mdx',
@@ -34,16 +34,52 @@ export const docsNav = [
     order: 3,
     status: 'draft',
   },
+  {
+    slug: 'security',
+    title: 'Безопасность',
+    section: 'Безопасность',
+    order: 4,
+    status: 'planned',
+  },
+  {
+    slug: 'operations',
+    title: 'Эксплуатация',
+    section: 'Эксплуатация',
+    order: 5,
+    status: 'planned',
+  },
 ];
 
-// Контроль на дубли: при сборке/тестах бросает исключение, если slug повторяется.
-const seen = new Set();
-for (const d of docsNav) {
-  if (seen.has(d.slug)) {
-    throw new Error(`Дублирующийся slug документации: ${d.slug}`);
+export function validateDocsRegistry(entries, cards = []) {
+  const slugs = new Set();
+  const sources = new Set();
+  for (const entry of entries) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.slug || '') || slugs.has(entry.slug)) {
+      throw new Error(`Invalid or duplicate documentation slug: ${entry.slug}`);
+    }
+    slugs.add(entry.slug);
+    if (!entry.title?.trim() || !entry.section?.trim() || !Number.isFinite(entry.order) || !DOC_STATUSES.includes(entry.status)) {
+      throw new Error(`Invalid documentation entry: ${entry.slug}`);
+    }
+    if (entry.status === 'published') {
+      if (entry.source !== `src/app/docs/${entry.slug}/page.mdx` || sources.has(entry.source)) {
+        throw new Error(`Invalid documentation source: ${entry.slug}`);
+      }
+      sources.add(entry.source);
+    } else if (entry.source || entry.href) {
+      throw new Error(`Unpublished documentation has a public source: ${entry.slug}`);
+    }
   }
-  seen.add(d.slug);
+  const cardSlugs = new Set();
+  for (const card of cards) {
+    if (!slugs.has(card.slug) || cardSlugs.has(card.slug)) {
+      throw new Error(`Unknown or duplicate documentation card: ${card.slug}`);
+    }
+    cardSlugs.add(card.slug);
+  }
 }
+
+validateDocsRegistry(docsNav);
 
 // Реестр отсортирован по полю order (публичные ссылки идут в этом порядке).
 export function getDocsNav() {

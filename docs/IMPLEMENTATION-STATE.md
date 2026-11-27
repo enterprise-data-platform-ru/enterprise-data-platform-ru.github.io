@@ -542,3 +542,11 @@
 - `npm test`: PASS, 94 теста; root build/check: PASS; `/edp-test` build/check: PASS; production export восстановлен и проверен; `git diff --check`: PASS.
 - BROWSER_FUNCTIONAL_VALIDATION: NOT_RUN; VISUAL_VALIDATION: NOT_RUN — browser access host недоступен. Проверить раскрытие, клавиатуру, ScrollSpy, якоря и размеры viewport на демонстрационной странице и `/docs/`.
 - DEMO: `/docs/style-preview/fix-07/`. NEXT_TASK: приёмка FIX-07, затем FIX-08. COMMIT_MESSAGE: `feat(docs): add responsive documentation navigation`.
+
+## FIX-08 — Реестр и целостность данных
+
+- BASE_SHA: `b771d5e`; BRANCH: `main`; STATUS: IN_PROGRESS — ожидается визуальная проверка владельцем.
+- В реестр добавлены planned-разделы security и operations, группа обзора переименована в «Начало работы». Добавлена проверка записей и карточек, а также тесты соответствия опубликованных источников и маршрутов.
+- Изменены `src/content/docs/navigation.mjs`, `src/app/docs/page.jsx`, `tests/docs.test.mjs`; добавлена страница `src/app/docs/style-preview/fix-08/page.mdx`.
+- `npm test`: PASS, 96 тестов; root build/check: PASS; `/edp-test` build/check: PASS; root export восстановлен и проверен; `git diff --check`: PASS.
+- BROWSER_FUNCTIONAL_VALIDATION: NOT_RUN; VISUAL_VALIDATION: NOT_RUN — browser access host недоступен. Демо: `/docs/style-preview/fix-08/`. NEXT_TASK: визуальная проверка FIX-08, затем FIX-09.

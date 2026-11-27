@@ -1,6 +1,6 @@
 import React from 'react';
 import {docs} from '../../content/site.mjs';
-import {getPublishedDocs, getGettingStarted, getSectionStatus, docPath} from '../../content/docs/navigation.mjs';
+import {getPublishedDocs, getGettingStarted, getSectionStatus, docPath, validateDocsRegistry, getDocsNav} from '../../content/docs/navigation.mjs';
 import {linkHref} from '../../lib/paths.mjs';
 import DocsLayout from '../../components/DocsLayout.jsx';
 
@@ -13,6 +13,7 @@ export const metadata = {
 };
 
 export default function DocsIndexPage() {
+  validateDocsRegistry(getDocsNav(), docs);
   const published = getPublishedDocs();
   const start = getGettingStarted();
 
