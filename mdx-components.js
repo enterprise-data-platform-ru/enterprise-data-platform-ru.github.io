@@ -65,7 +65,11 @@ function rebuildTableElement(element) {
   const props = {...element.props};
   props.children = cleanTableChildren(element.props.children);
 
-  return createElement(element.type, {...props, key: element.key});
+  // Only preserve key if it's not null/undefined to avoid duplicate key warnings
+  if (element.key != null) {
+    return createElement(element.type, {...props, key: element.key});
+  }
+  return createElement(element.type, props);
 }
 
 // Keep the native table and isolate horizontal scrolling in a focusable wrapper.

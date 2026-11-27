@@ -411,3 +411,70 @@
 
 - VISUAL_VALIDATION: NOT_RUN — браузерная проверка sticky-поведения на 7 viewport отложена владельцу.
 - `git commit` и `git push` не выполнялись (запрещено заданием).
+
+---
+
+## FIX-06-R1 — Sidebar, TOC and ScrollSpy Refinement
+
+Дата: 26.11.2026. Базовый коммит: `1ff1e89` (FIX-06). Ветка `main`.
+
+### R1.1 — Sidebar height/sticky behavior
+
+- `src/app/docs/docs.css`: `.docs-sidebar` — `top` изменён с `calc(var(--docs-header-height, 77px) + 4px)` на `var(--docs-header-height, 77px)`; `max-height` → `height: calc(100dvh - var(--docs-header-height, 77px))`; `overscroll-behavior: contain` → `overscroll-behavior-y: contain`; `min-width: 0` сохранён.
+- `@media (max-width: 899px)`: `.docs-sidebar` — `position: static; height: auto; max-height: none; overflow: visible; overscroll-behavior-y: auto; scrollbar-gutter: auto`.
+
+### R1.2 — TOC aria-current unification
+
+- `src/app/docs/docs.css`: удалены старые селекторы `.docs-toc ul`, `.docs-toc li`, `.docs-toc a`, `.docs-toc a:hover`, `.docs-toc-item.is-sub`, `.docs-toc-item.is-active a`, `.docs-toc-item a[aria-current="location"]`.
+- Новые: `.docs-toc-collapsible` (border/margin/padding reset), `.docs-toc-collapsible > summary` (hidden на desktop), `.docs-toc-list` (list reset), `.docs-toc-list a` (border-left transparent, padding, `var(--docs-muted)`), `.docs-toc-list a[aria-current="location"]` (`var(--docs-primary)`, `font-weight: 600`), `.docs-toc-list a:hover`, `.docs-toc-item.is-sub`, `.docs-toc-item.is-active > a` (оба `aria-current` + `is-active`).
+- `src/components/DocsToc.jsx`: `<details open className="docs-toc-collapsible">` → `<summary>На этой странице</summary>` → `<nav aria-label="Содержание страницы">` → `<ul className="docs-toc-list" data-active-heading>` → `<li data-heading-level>` с `aria-current="location"` и `is-active` классом одновременно.
+- `src/components/DocsLayout.jsx`: удалён `<h2>На этой странице</h2>` из `<aside>`.
+
+### R1.3 — Adaptive TOC placement
+
+- `src/app/docs/docs.css`: `@media (max-width: 1199px)` — grid-template-areas `"sidebar toc" / "sidebar main"`, `.docs-toc` (static, `grid-area: toc`, collapsible summary visible), `.docs-main` (`grid-area: main`).
+- `@media (max-width: 899px)` — `grid-template-areas: none`, `.docs-toc` с `order: -1` (TOC над контентом на mobile).
+
+### R1.4 — ScrollSpy algorithm refinement
+
+- `src/lib/scroll-spy.mjs`: переписан с нуля. Экспорт `createScrollSpy(scope, items, {onChange, rootMargin, threshold})` — 6 правил: (1) первый видимый заголовок сверху, (2) последний при atBottom, (3) последний прошедший до scroll-offset, fallback через `getBoundingClientRect`. `rAF`-throttling через `scheduleUpdate()`. `IntersectionObserver` с fallback на scroll+rect. `findActiveHeading()` и `collectHeadingEntries()` сохранены как экспортируемые функции для тестов.
+
+### R1.5 — Event handler correctness
+
+- `src/components/DocsToc.jsx`: `hashchange` listener с cleanup. `IntersectionObserver` через `createScrollSpy`. `scroll`/`resize` via rAF + passive. Полный cleanup на unmount (`observer.disconnect()`, `removeEventListener`).
+- SSR-safe guard: `if (!items.length) return null` — предотвращает crash при prerendering.
+- `React` импортирован явно (React 18 JSX runtime).
+
+### R1.6 — Anchor navigation robustness
+
+- `href={`#${item.id}`}` для всех TOC-ссылок. Кириллица обрабатывается `slugifyHeading` из `heading-slug.mjs` (lowercase, spaces→hyphens, strip punctuation). `scroll-margin-top: calc(var(--docs-header-height, 77px) + 12px)` на `#docs-content a[id]` (FIX-06, сохранён).
+
+### Дополнительный фикс — React table key warning
+
+- `mdx-components.js`: `rebuildTableElement` — key передаётся только при `element.key != null`, устраняет React warning "two children with the same key, `null`".
+
+### Автопроверки
+
+- `npm test` — 87/87 PASS (fail 0, cancelled 0, skipped 0, todo 0).
+- `npm run build` (empty basePath) — 8 routes: `/`, `/_not-found`, `/docs`, `/docs/overview`, `/docs/style-preview`, `/robots.txt`, `/sitemap.xml` + static assets.
+- `npm run check:export` (empty basePath) — PASS: 126 local asset references, 7 HTML files, basePath=/.
+- `git diff --check` — whitespace clean.
+- `git diff --stat` — 6 files changed, 297 insertions(+), 97 deletions(-): `AGENTS.md` (next dev auto-add), `mdx-components.js`, `src/app/docs/docs.css`, `src/components/DocsLayout.jsx`, `src/components/DocsToc.jsx`, `src/lib/scroll-spy.mjs`.
+
+### Замечание
+
+- `check:export` с `basePath=/edp-test` — `404/index.html: missing basePath in /_next/static/chunks/*.css` — **предшествующая проблема** (подтверждено через `git stash` на чистом дереве). Не связана с FIX-06-R1.
+
+### Изменённые файлы
+
+- `src/app/docs/docs.css` — R1.1 sidebar, R1.2 TOC CSS, R1.3 media queries.
+- `src/components/DocsToc.jsx` — R1.2 collapsible details, R1.4/R1.5 ScrollSpy + event handlers, R1.6 anchor hrefs.
+- `src/components/DocsLayout.jsx` — удалён `<h2>` из aside (R1.2).
+- `src/lib/scroll-spy.mjs` — R1.4 полный rewrite: rAF, 6-rule algorithm, IntersectionObserver.
+- `mdx-components.js` — table key null guard.
+- `docs/IMPLEMENTATION-STATE.md` — этот журнал.
+
+### Не выполнено
+
+- VISUAL_VALIDATION: NOT_RUN — браузерная проверка на 7 viewport отложена владельцу.
+- `git commit` и `git push` не выполнялись (запрещено заданием).

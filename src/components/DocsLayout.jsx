@@ -25,7 +25,6 @@ export default function DocsLayout({children, currentSlug = '', variant = 'artic
       </main>
       {!isIndex && (
         <aside className="docs-toc" aria-label="Оглавление">
-          <h2>На этой странице</h2>
           <DocsToc scopeId="docs-content" />
         </aside>
       )}

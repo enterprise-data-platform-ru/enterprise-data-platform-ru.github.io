@@ -1,8 +1,10 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {slugifyHeading, uniqueHeadingId} from '../lib/heading-slug.mjs';
 import {findActiveHeading, collectHeadingEntries} from '../lib/scroll-spy.mjs';
+
+// ScrollSpy uses IntersectionObserver via createScrollSpy from scroll-spy.mjs
 
 // B06: оглавление строится из реальных заголовков h2/h3 в теле статьи, поэтому
 // оно не может «отстать» от контента (нет отдельного списка вручную).
@@ -11,7 +13,7 @@ import {findActiveHeading, collectHeadingEntries} from '../lib/scroll-spy.mjs';
 // назначается на месте, и рендерятся ссылки на эти якоря.
 // FIX-06: добавлен ScrollSpy через IntersectionObserver — активная ссылка
 // подсвечивается при прокрутке.
-export default function DocsToc({scopeId = 'main'}) {
+export default function DocsToc({scopeId = 'docs-content'}) {
   const [items, setItems] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const observerRef = useRef(null);
@@ -48,9 +50,21 @@ export default function DocsToc({scopeId = 'main'}) {
       headingEls.forEach((el) => observer.observe(el));
       observerRef.current = observer;
 
+      function onHashChange() {
+        const hash = window.location.hash;
+        if (hash) {
+          const id = hash.slice(1);
+          setActiveId(id);
+        }
+      }
+
+      window.addEventListener('hashchange', onHashChange);
+      onHashChange();
+
       return () => {
         observer.disconnect();
         observerRef.current = null;
+        window.removeEventListener('hashchange', onHashChange);
       };
     }
 
@@ -73,27 +87,32 @@ export default function DocsToc({scopeId = 'main'}) {
   if (!items.length) return null;
 
   return (
-    <ul className="docs-toc-list" aria-label="Оглавление на этой странице">
-      {items.map((it) => {
-        const isActive = it.id === activeId;
-        return (
-          <li
-            key={it.id}
-            className={
-              (it.level === 3 ? 'docs-toc-item is-sub' : 'docs-toc-item') +
-              (isActive ? ' is-active' : '')
-            }
-          >
-            <a
-              href={`#${it.id}`}
-              aria-current={isActive ? 'location' : undefined}
-            >
-              {it.text}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="docs-toc-inner">
+      <details className="docs-toc-collapsible" open>
+        <summary>На этой странице</summary>
+        <nav aria-label="Содержание страницы">
+          <ul className="docs-toc-list" data-active-heading={activeId || undefined}>
+            {items.map((it) => {
+              const isActive = it.id === activeId;
+              return (
+                <li
+                  key={it.id}
+                  className={`docs-toc-item${it.level === 3 ? ' is-sub' : ''}${isActive ? ' is-active' : ''}`}
+                  data-heading-level={it.level}
+                >
+                  <a
+                    href={`#${it.id}`}
+                    aria-current={isActive ? 'location' : undefined}
+                  >
+                    {it.text}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </details>
+    </div>
   );
 }
 
