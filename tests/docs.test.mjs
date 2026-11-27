@@ -475,7 +475,10 @@ test('DocsTable removes whitespace on every table level and keeps cell content',
   const table = wrapper.props.children;
   let whitespaceCount = 0;
   const walk = (children) => {
-    for (const child of react.Children.toArray(children)) {
+    for (const child of children) {
+      if (react.isValidElement(child)) {
+        assert.notEqual(child.key, null, `missing key on ${child.type}`);
+      }
       if (!child || !child.type || !STRUCT.has(child.type)) {
         continue;
       }
@@ -498,6 +501,9 @@ test('DocsTable removes whitespace on every table level and keeps cell content',
   const tdEl = trEl.props.children.find((c) => c && c.type === 'td');
   const cellText = react.Children.toArray(tdEl.props.children).map(String).join('');
   assert.ok(cellText.includes('A'), 'cell content must be preserved');
+  const {renderToStaticMarkup} = await import('react-dom/server');
+  const html = renderToStaticMarkup(wrapper);
+  assert.match(html, /<thead><tr><th>H<\/th><\/tr><\/thead>/);
 });
 
 test('mdx-components exports DocsCallout (callout) component', () => {

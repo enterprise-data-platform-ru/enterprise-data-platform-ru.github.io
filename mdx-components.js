@@ -33,7 +33,9 @@ function isStructuralElement(element) {
 function cleanTableChildren(children) {
   const result = [];
 
-  Children.forEach(children, (child) => {
+  // Normalize the list first so React supplies stable keys for unkeyed MDX
+  // elements and preserves explicit keys before structural nodes are rebuilt.
+  Children.toArray(children).forEach((child) => {
     if (child === null || child === undefined || child === false || child === true) {
       return;
     }
@@ -65,7 +67,7 @@ function rebuildTableElement(element) {
   const props = {...element.props};
   props.children = cleanTableChildren(element.props.children);
 
-  // Only preserve key if it's not null/undefined to avoid duplicate key warnings
+  // Preserve the normalized key when rebuilding the element.
   if (element.key != null) {
     return createElement(element.type, {...props, key: element.key});
   }
