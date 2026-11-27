@@ -1,12 +1,22 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {slugifyHeading, uniqueHeadingId} from '../lib/heading-slug.mjs';
 import {findActiveHeading} from '../lib/scroll-spy.mjs';
 
 export default function DocsToc({scopeId = 'docs-content'}) {
   const [items, setItems] = useState([]);
   const [activeId, setActiveId] = useState(null);
+  const detailsRef = useRef(null);
+
+  useEffect(() => {
+    if (!items.length) return;
+    const media = window.matchMedia('(min-width: 1200px)');
+    const sync = () => { detailsRef.current.open = media.matches; };
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, [items.length]);
 
   useEffect(() => {
     const root = document.getElementById(scopeId);
@@ -84,7 +94,7 @@ export default function DocsToc({scopeId = 'docs-content'}) {
   if (!items.length) return null;
   return (
     <div className="docs-toc-inner">
-      <details className="docs-toc-collapsible" open>
+      <details ref={detailsRef} className="docs-toc-collapsible" open>
         <summary>На этой странице</summary>
         <nav aria-label="Содержание страницы">
           <ul className="docs-toc-list" data-active-heading={activeId || undefined}>

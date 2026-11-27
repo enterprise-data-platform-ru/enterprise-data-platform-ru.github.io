@@ -170,9 +170,20 @@ test('FIX-06-R1.1 sidebar background and border fill the full panel height', () 
     '.docs-sidebar must paint a full-height right border');
 });
 
-test('FIX-06-R1.1 mobile fallback clears the fixed height and overflow', () => {
-  assert.ok(/@media\s*\(max-width:\s*899px\)\s*\{[\s\S]*\.docs-sidebar[^{]*\{[^}]*max-height:\s*none/s.test(css),
-    'mobile must clear the sidebar max-height');
-  assert.ok(/@media\s*\(max-width:\s*899px\)\s*\{[\s\S]*\.docs-sidebar[^{]*\{[^}]*overflow:\s*visible/s.test(css),
-    'mobile must clear the sidebar overflow');
+test('mobile sidebar has bounded independent scrolling', () => {
+  assert.match(css, /\.docs-mobile-nav \.docs-sidebar\s*\{[^}]*position:\s*static/s);
+  assert.match(css, /\.docs-mobile-nav \.docs-sidebar\s*\{[^}]*max-height:\s*65dvh/s);
+  assert.match(css, /\.docs-mobile-nav \.docs-sidebar\s*\{[^}]*overflow-y:\s*auto/s);
+});
+
+test('responsive navigation reuses sidebar and a single TOC', () => {
+  const mobile = read('src/components/DocsMobileNav.jsx');
+  assert.match(layout, /<DocsMobileNav currentSlug=/);
+  assert.match(mobile, /<details className="docs-mobile-nav">/);
+  assert.match(mobile, /<DocsSidebar currentSlug=/);
+  assert.equal((layout.match(/<DocsToc\b/g) || []).length, 1);
+  assert.match(css, /\.docs-sidebar-desktop\s*\{\s*display:\s*none/);
+  assert.match(css, /@media \(max-width:\s*1199px\)/);
+  assert.match(css, /\.docs-toc-list a\s*\{[^}]*min-height:\s*44px/s);
+  assert.doesNotMatch(sitemap, /style-preview/);
 });
