@@ -21,6 +21,7 @@ Respond in Russian. Write code identifiers, technical comments, and commit messa
 - Keep changes minimal and within task scope.
 - Never fabricate customers, metrics, certifications, partnerships, or contact information.
 - Never copy third-party proprietary content.
+- Describe documentation concepts and implementation status accurately; publish Quick Start instructions only for a verified environment and commands.
 
 ## Context Management
 
@@ -36,7 +37,7 @@ Optimize for local LLMs with a 32K context window.
 
 ## Skills
 
-Project skills are located in `.pi/skills/`.
+Project skills are located in `.agents/skills/` when available locally. Use the session's available-skills catalog to resolve their paths.
 
 Select skills based on the task:
 
@@ -62,19 +63,23 @@ Read relevant documents on demand:
 
 - `docs/ROADMAP.md` — roadmap.
 - `docs/IMPLEMENTATION-PLAN.md` — implementation plan.
-- `docs/IMPLEMENTATION-STATE.md` — implementation status.
+- `docs/IMPLEMENTATION-STATE.md` — implementation history and latest status; read the latest relevant entries.
+- `docs/IMPLEMENTATION-FIX-PLAN.md` — documentation fixes, when available locally.
+- `docs/IMPLEMENTATION-FIX-VALIDATION.md` — documentation acceptance results, when available locally.
 - `docs/VALIDATION.md` — validation requirements.
 - `docs/GITHUB-PAGES.md` — deployment constraints.
 - `docs/adr/` — architecture decisions.
 
-Update implementation status only when relevant work has been completed and verified.
+Treat baseline dates, task statuses, and verification results as historical; check the current code and latest records before acting. Update implementation status only when relevant work has been completed and verified.
 
 ## Source Layout
 
 - `src/app/` — pages and layouts.
 - `src/components/` — reusable components.
 - `src/content/site.mjs` — structured content.
+- `src/content/docs/navigation.mjs` — documentation registry and publication status.
 - `src/app/globals.css` — website styles and CSS design tokens.
+- `src/app/docs/docs.css` — documentation-specific styles.
 - `src/lib/` — shared utilities.
 - `design/` — local copies of brand guidelines and design tokens.
 - `public/` — static assets.
@@ -110,6 +115,20 @@ Reuse existing CSS tokens instead of hardcoding brand colors and other shared va
 
 Treat `design/` as a read-only brand reference unless the task explicitly authorizes a brand update. Do not automatically fetch or synchronize upstream files. If a brand file is missing or conflicts with the website implementation, report the issue; do not invent standards or silently redesign the website. Continue unrelated work if possible.
 
+## Visual Validation
+
+- Every task affecting UI, layout, styling, navigation, or interactive behavior must include a dedicated demonstration page under `/docs/style-preview/`.
+- Algorithm-related tasks should include an isolated diagnostic page when visual verification is useful.
+- Demonstration pages must reuse actual production components, styles, and utilities.
+- Never duplicate production logic for demonstration purposes.
+- Include representative content, edge cases, expected behavior, and manual verification instructions.
+- Keep demonstration pages out of production navigation and sitemap, and mark them as noindex.
+- `noindex` does not prevent access or exclude a page from `out/`; resolve the publication of demonstration routes before releasing them.
+- Preserve static export and base path compatibility.
+- Include demonstration URLs in the task completion report.
+- Never report visual validation as completed unless the page was actually inspected in a browser.
+- Successful builds and automated tests do not replace visual acceptance.
+
 ## Deployment
 
 - GitHub Pages has no server runtime.
@@ -118,6 +137,7 @@ Treat `design/` as a read-only brand reference unless the task explicitly author
 - Preserve `NEXT_PUBLIC_BASE_PATH` handling.
 - Use `assetPath()` for public assets.
 - Use Next Link for internal navigation.
+- For existing ordinary anchors, use `linkHref()` and `docPath()` where applicable; do not manually add `basePath` to Next Link. Local article anchors use `#id`.
 - Preserve canonical domain and SEO metadata.
 - Never expose secrets in client-side code.
 - Preserve approved analytics and cookie consent behavior.
@@ -147,6 +167,8 @@ git status --short
 ```
 
 For UI changes, verify desktop/mobile layouts, navigation, accessibility, visual consistency, and compliance with the local brand standards.
+
+For changes affecting routes, assets, documentation links, or static export, also build and run `check:export` with both an empty `NEXT_PUBLIC_BASE_PATH` and `/edp-test`; restore the empty-base-path export afterwards.
 
 Never claim that an unexecuted check passed. Do not disable tests to bypass failures.
 
