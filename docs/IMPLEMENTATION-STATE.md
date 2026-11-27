@@ -478,3 +478,45 @@
 
 - VISUAL_VALIDATION: NOT_RUN — браузерная проверка на 7 viewport отложена владельцу.
 - `git commit` и `git push` не выполнялись (запрещено заданием).
+
+## FIX-06-R1.1 — Sidebar refinement: sticky height, touch targets, compact headings
+
+Дата: 27.11.2026. Базовый коммит: `222a04d` (FIX-06-R1). Ветка `main`.
+
+### Изменения в `src/app/docs/docs.css`
+
+- `.docs-sidebar` — добавлен `min-height: 0` (комментарь: grid-элемент должен ужиматься ниже высоты содержимого внутри фиксированного `height: calc(100dvh - header)` для корректной работы `overflow-y: auto`).
+- `.docs-nav-summary` — типографика приведена к канону 3.2 (Sidebar group / TOC title): `font-size: 13px → 11px`, `line-height: 20px → 16px`, добавлено `text-transform: uppercase`, `font-weight: 600` сохранён.
+- `:focus-visible` — к списку `.docs-sidebar a:focus-visible, .docs-toc a:focus-visible, .docs-sidebar button:focus-visible` добавлен `.docs-sidebar summary:focus-visible` (видимый фокус на раскрываемых группах).
+- `@media (pointer: coarse)` — новый блок: `.docs-nav-item a { min-height: 44px; }` и `.docs-nav-summary { display: flex; align-items: center; min-height: 44px; }` — увеличенные точки касания для сенсорного ввода; обычный ввод сохраняет 36px.
+
+### Demo-страница `src/app/docs/style-preview/fix-06-r1-1/page.mdx`
+
+- Новая страница использует реальные `DocsLayout` + `DocsSidebar` (через родительский `style-preview/layout.jsx`, `variant="article"`, `currentSlug=""`), а не копии.
+- `metadata`: `robots: {index: false, follow: false}` — исключена из индексации; `alternates.canonical` на `https://enterprisedataplatform.ru/docs/style-preview/fix-06-r1-1/`.
+- Содержит H2/H3 для TOC/ScrollSpy, сценарии sticky/независимого скролла, таблицу поведения по ширине (1440/1024/900/899/768/390px), раздел coarse-pointer 44px, проверку фокус-стилей клавиатурой, длинный контент для скролла, якорь, встроенный код/`kbd`.
+- Не появляется в навигации и в sitemap: `src/app/sitemap.js` перечисляет только корень, `/docs/` и статьи из `getPublishedDocs()`; demo-маршрут в реестр не входит (проверено тестом).
+- В сборке: `out/docs/style-preview/fix-06-r1-1/index.html` содержит `name="robots" content="noindex, nofollow"`.
+
+### Тесты `tests/docs-layout.test.mjs`
+
+- Добавлены 5 тестов FIX-06-R1.1: (1) demo noindex + отсутствие в sitemap; (2) 36px на обычном вводе / 44px на `pointer: coarse`; (3) компактный `summary` (11/16/600/uppercase) + `summary:focus-visible`; (4) фон и правая граница `.docs-sidebar` заполняют высоту панели; (5) mobile-fallback очищает `max-height: none` и `overflow: visible`.
+
+### Автопроверки
+
+- `npm test` — 92/92 PASS (fail 0, cancelled 0, skipped 0, todo 0); в `tests/docs-layout.test.mjs` 17/17.
+- `npm run build` (empty basePath) — 9 routes: `/`, `/_not-found`, `/docs`, `/docs/overview`, `/docs/style-preview`, `/docs/style-preview/fix-06-r1-1`, `/robots.txt`, `/sitemap.xml` + static assets.
+- `git diff --check` (scoped) — whitespace clean.
+- CSS-правила присутствуют в бандле `out/_next/static/chunks/*.css` (комментарии-маркеры FIX-06-R1.1 минифицируются, сами правила на месте).
+
+### Изменённые файлы
+
+- `src/app/docs/docs.css` — `min-height: 0`, компактный summary (11/16/600/uppercase), focus-visible на summary, coarse-pointer 44px.
+- `src/app/docs/style-preview/fix-06-r1-1/page.mdx` — новая demo-страница (noindex).
+- `tests/docs-layout.test.mjs` — 5 регрессионных тестов FIX-06-R1.1.
+- `docs/IMPLEMENTATION-STATE.md` — этот журнал.
+
+### Не выполнено
+
+- VISUAL_VALIDATION: NOT_RUN — браузерная проверка на 7 viewport (1440/1024/900/899/768/390) и проверка touch-targets 44px отложены владельцу.
+- `git commit` и `git push` не выполнялись (запрещено заданием).

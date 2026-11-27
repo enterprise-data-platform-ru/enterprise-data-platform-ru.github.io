@@ -62,7 +62,11 @@
   position: sticky;
   top: var(--docs-header-height, 77px);
   align-self: start;
+  /* FIX-06-R1.1: панель занимает всю доступную высоту под sticky Header и
+     скроллится независимо. min-height: 0 позволяет grid-элементу сжиматься
+     и корректно обрабатывать переполнение внутри фиксированной высоты. */
   height: calc(100dvh - var(--docs-header-height, 77px));
+  min-height: 0;
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior-y: contain;
@@ -82,12 +86,15 @@
 }
 .docs-nav-list, .docs-nav-items { list-style: none; margin: 0; padding: 0; }
 .docs-nav-group { margin-top: 16px; }
+/* FIX-06-R1.1: заголовок группы Sidebar = 11/16px 600 uppercase
+   (канон 3.2 «Sidebar group / TOC title»), единообразно с .docs-toc h2. */
 .docs-nav-summary {
   padding: 8px 12px;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 16px;
   font-weight: 600;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .docs-nav-items { padding-left: 8px; }
@@ -696,10 +703,25 @@
 }
 
 /* FIX-06: keyboard focus for sidebar and TOC links */
+/* FIX-06-R1.1: видимый :focus-visible также для summary (раскрываемых групп). */
 .docs-sidebar a:focus-visible,
 .docs-toc a:focus-visible,
-.docs-sidebar button:focus-visible {
+.docs-sidebar button:focus-visible,
+.docs-sidebar summary:focus-visible {
   outline: 2px solid var(--docs-primary);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* FIX-06-R1.1: увеличенные точки касания 44px на устройствах с coarse pointer
+   (сенсорный ввод). Обычные ссылки сохраняют 36px на точном вводe. */
+@media (pointer: coarse) {
+  .docs-nav-item a {
+    min-height: 44px;
+  }
+  .docs-nav-summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
 }

@@ -10,6 +10,8 @@ const layout = read('src/components/DocsLayout.jsx');
 const css = read('src/app/docs/docs.css');
 const toc = read('src/components/DocsToc.jsx');
 const articleNav = read('src/components/DocsArticleNav.jsx');
+const fixDemo = read('src/app/docs/style-preview/fix-06-r1-1/page.mdx');
+const sitemap = read('src/app/sitemap.js');
 
 // Source contracts complement, but do not replace, exported HTML checks.
 test('documentation routes declare canonical metadata inside alternates', () => {
@@ -131,4 +133,49 @@ test('docs CSS scroll-margin-top accounts for sticky header', () => {
 test('docs CSS styles active TOC item for ScrollSpy', () => {
   assert.ok(/\.docs-toc-item\.is-active/.test(css),
     'CSS must style .docs-toc-item.is-active');
+});
+
+// FIX-06-R1.1: sticky sidebar refinement
+
+test('FIX-06-R1.1 demo page declares noindex and stays out of the catalog/sitemap', () => {
+  assert.match(fixDemo, /export\s+const\s+metadata\s*=/,
+    'demo page must export metadata');
+  assert.match(fixDemo, /robots\s*:\s*\{\s*index:\s*false\s*,\s*follow:\s*false\s*\}/,
+    'demo page must declare robots noindex');
+  assert.doesNotMatch(sitemap, /style-preview/,
+    'style-preview must not be listed in the sitemap');
+});
+
+test('FIX-06-R1.1 sidebar targets are 36px on desktop and 44px on coarse pointers', () => {
+  assert.ok(/\.docs-nav-item\s+a\s*\{[^}]*min-height:\s*36px/s.test(css),
+    'sidebar links must be at least 36px tall on non-touch');
+  assert.ok(/@media\s*\(pointer:\s*coarse\)\s*\{[\s\S]*min-height:\s*44px/s.test(css),
+    'coarse pointers must bump touch targets to 44px');
+});
+
+test('FIX-06-R1.1 group heading is compact and keyboard-focusable', () => {
+  assert.ok(/\.docs-nav-summary\s*\{[^}]*font-size:\s*11px/s.test(css),
+    '.docs-nav-summary must be compact (11px)');
+  assert.ok(/\.docs-nav-summary\s*\{[^}]*line-height:\s*16px/s.test(css),
+    '.docs-nav-summary must use 16px line-height');
+  assert.ok(/\.docs-nav-summary\s*\{[^}]*font-weight:\s*600/s.test(css),
+    '.docs-nav-summary must be 600 weight');
+  assert.ok(/\.docs-nav-summary\s*\{[^}]*text-transform:\s*uppercase/s.test(css),
+    '.docs-nav-summary must be uppercase');
+  assert.ok(/\.docs-sidebar summary:focus-visible/.test(css),
+    'group summary must have a :focus-visible style');
+});
+
+test('FIX-06-R1.1 sidebar background and border fill the full panel height', () => {
+  assert.ok(/\.docs-sidebar\s*\{[^}]*background:\s*var\(--docs-sidebar-bg\)/s.test(css),
+    '.docs-sidebar must paint a full-height background');
+  assert.ok(/\.docs-sidebar\s*\{[^}]*border-right:\s*1px solid var\(--line\)/s.test(css),
+    '.docs-sidebar must paint a full-height right border');
+});
+
+test('FIX-06-R1.1 mobile fallback clears the fixed height and overflow', () => {
+  assert.ok(/@media\s*\(max-width:\s*899px\)\s*\{[\s\S]*\.docs-sidebar[^{]*\{[^}]*max-height:\s*none/s.test(css),
+    'mobile must clear the sidebar max-height');
+  assert.ok(/@media\s*\(max-width:\s*899px\)\s*\{[\s\S]*\.docs-sidebar[^{]*\{[^}]*overflow:\s*visible/s.test(css),
+    'mobile must clear the sidebar overflow');
 });
