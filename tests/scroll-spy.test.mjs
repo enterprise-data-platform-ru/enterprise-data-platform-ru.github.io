@@ -84,3 +84,12 @@ test('collectHeadingEntries adds scrollY to boundingClientRect top', () => {
   const entries = collectHeadingEntries(els, 800);
   assert.equal(entries[0].top, 810);
 });
+
+test('activation boundary, reverse scrolling and bottom handling', () => {
+  const headings = [{id: 'h2', top: 200}, {id: 'h3', top: 400}, {id: 'last', top: 900}];
+  assert.equal(findActiveHeading(headings, 299, 100), 'h2');
+  assert.equal(findActiveHeading(headings, 300, 100), 'h3');
+  assert.equal(findActiveHeading(headings, 299, 100), 'h2');
+  assert.equal(findActiveHeading(headings, 600, 100, {scrollHeight: 1000, clientHeight: 400}), 'last');
+  assert.equal(findActiveHeading(headings, 0, 100, {scrollHeight: 400, clientHeight: 400}), 'h2');
+});

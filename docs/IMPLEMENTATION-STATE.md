@@ -520,3 +520,15 @@
 
 - VISUAL_VALIDATION: NOT_RUN — браузерная проверка на 7 viewport (1440/1024/900/899/768/390) и проверка touch-targets 44px отложены владельцу.
 - `git commit` и `git push` не выполнялись (запрещено заданием).
+
+## FIX-06-R1.2–R1.5 — TOC и ScrollSpy
+
+- BASE_SHA: `d581b6c69c34859c6450a414a258668c35b0fcb3`; BRANCH: `main`.
+- STATUS: IN_PROGRESS — реализация подготовлена, браузерная приёмка не выполнена.
+- R1.1: ранее реализован, требуется браузерная приёмка. R1.2–R1.4: изменения и демонстрационные страницы подготовлены; R1.5: автоматические проверки выполнены, приёмка ожидает браузера.
+- TOC использует `aria-current`, общий алгоритм ScrollSpy, фактическую высоту header и позиции H2/H3. Добавлены диагностика и страницы проверки; они наследуют `noindex` и не входят в sitemap.
+- Файлы: `src/app/docs/docs.css`, `src/components/DocsToc.jsx`, `src/lib/scroll-spy.mjs`, `tests/docs-layout.test.mjs`, `tests/scroll-spy.test.mjs`, `src/app/docs/style-preview/page.mdx`, новые каталоги `fix-06-r1-2`–`fix-06-r1-5`.
+- `npm test`: PASS, 93 теста. Root build/check: PASS; `/edp-test` build/check: PASS; root export восстановлен и проверен. В HTML присутствуют `naznachenie` и `granitsy`. `git diff --check`: PASS.
+- BROWSER_FUNCTIONAL_VALIDATION: NOT_RUN; VISUAL_VALIDATION: NOT_RUN — browser access host недоступен. Проверка отсутствия ошибок hydration, переходов и поведения на контрольных размерах остаётся обязательной.
+- NEXT_TASK: завершить браузерную приёмку FIX-06-R1.1–R1.5 перед FIX-07.
+- Демонстрации: `/docs/style-preview/fix-06-r1-1/`, `/docs/style-preview/fix-06-r1-2/`, `/docs/style-preview/fix-06-r1-3/`, `/docs/style-preview/fix-06-r1-4/`, `/docs/style-preview/fix-06-r1-4/short/`, `/docs/style-preview/fix-06-r1-5/`.

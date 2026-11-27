@@ -107,13 +107,11 @@ test('docs CSS has keyboard focus styles for sidebar and TOC', () => {
 });
 
 // FIX-06: ScrollSpy in DocsToc
-test('DocsToc uses IntersectionObserver for ScrollSpy', () => {
-  assert.ok(/IntersectionObserver/.test(toc),
-    'DocsToc must use IntersectionObserver');
-  assert.ok(/aria-current/.test(toc),
-    'DocsToc must set aria-current on active link');
-  assert.ok(/is-active/.test(toc),
-    'DocsToc must add is-active class to active item');
+test('DocsToc uses the shared ScrollSpy and accessible active state', () => {
+  assert.match(toc, /findActiveHeading/);
+  assert.match(toc, /requestAnimationFrame/);
+  assert.match(toc, /aria-current/);
+  assert.doesNotMatch(toc, /is-active/);
 });
 
 test('DocsArticleNav uses docPath for prev/next hrefs', () => {
@@ -130,9 +128,8 @@ test('docs CSS scroll-margin-top accounts for sticky header', () => {
     'scroll-margin-top must use --docs-header-height to offset sticky header');
 });
 
-test('docs CSS styles active TOC item for ScrollSpy', () => {
-  assert.ok(/\.docs-toc-item\.is-active/.test(css),
-    'CSS must style .docs-toc-item.is-active');
+test('docs CSS styles the current TOC link', () => {
+  assert.match(css, /\.docs-toc-list a\[aria-current="location"\]/);
 });
 
 // FIX-06-R1.1: sticky sidebar refinement

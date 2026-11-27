@@ -318,9 +318,10 @@
 .docs-toc {
   min-width: 0;
   position: sticky;
-  top: var(--docs-header-height, 77px);
+  top: calc(var(--docs-header-height, 77px) + 24px);
   align-self: start;
-  height: calc(100dvh - var(--docs-header-height, 77px));
+  height: auto;
+  max-height: calc(100dvh - var(--docs-header-height, 77px) - 24px);
   overflow-y: auto;
   overscroll-behavior-y: contain;
   padding: 0 20px 24px;
@@ -385,11 +386,6 @@
   padding-left: 12px;
 }
 
-.docs-toc-item.is-active > a {
-  border-left-color: var(--docs-primary);
-  color: var(--docs-primary);
-  font-weight: 600;
-}
 .docs-article-nav {
   display: flex;
   justify-content: space-between;
@@ -706,6 +702,7 @@
 /* FIX-06-R1.1: видимый :focus-visible также для summary (раскрываемых групп). */
 .docs-sidebar a:focus-visible,
 .docs-toc a:focus-visible,
+.docs-toc summary:focus-visible,
 .docs-sidebar button:focus-visible,
 .docs-sidebar summary:focus-visible {
   outline: 2px solid var(--docs-primary);
