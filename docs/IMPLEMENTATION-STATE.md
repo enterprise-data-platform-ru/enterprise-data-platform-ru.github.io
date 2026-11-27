@@ -550,3 +550,11 @@
 - Изменены `src/content/docs/navigation.mjs`, `src/app/docs/page.jsx`, `tests/docs.test.mjs`; добавлена страница `src/app/docs/style-preview/fix-08/page.mdx`.
 - `npm test`: PASS, 96 тестов; root build/check: PASS; `/edp-test` build/check: PASS; root export восстановлен и проверен; `git diff --check`: PASS.
 - BROWSER_FUNCTIONAL_VALIDATION: NOT_RUN; VISUAL_VALIDATION: NOT_RUN — browser access host недоступен. Демо: `/docs/style-preview/fix-08/`. NEXT_TASK: визуальная проверка FIX-08, затем FIX-09.
+
+## FIX-09 — Итоговая регрессия
+
+- BASE_SHA: `cbfa9c8ec217b15c44b3509835035788066ed32d`; BRANCH: `main`; STATUS: IMPLEMENTED, ручная приёмка открыта.
+- `npm test`: PASS, 96 тестов; root build/check: PASS; `/edp-test` build/check: PASS; root export восстановлен и проверен; `git diff --check`: PASS. Подробности: `docs/IMPLEMENTATION-FIX-VALIDATION.md`.
+- BROWSER_FUNCTIONAL_VALIDATION: NOT_RUN; VISUAL_VALIDATION: NOT_RUN; SCREENSHOTS: нет. Требуются проверка браузера и финальная приёмка владельцем. Страницы style-preview присутствуют в экспорте и требуют отдельного решения перед публикацией.
+- NEXT_TASK: ручная приёмка FIX-09. COMMIT_MESSAGE: `test(docs): validate documentation redesign and static export`.
+- Владелец сообщил о завершении визуального контроля FIX-09. Детальные результаты по отдельным разрешениям и браузерным сценариям не предоставлены; автоматизированная браузерная проверка агентом остаётся NOT_RUN.
