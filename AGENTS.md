@@ -64,7 +64,7 @@ Read relevant documents on demand:
 - `docs/ROADMAP.md` — roadmap.
 - `docs/IMPLEMENTATION-PLAN.md` — implementation plan.
 - `docs/IMPLEMENTATION-STATE.md` — implementation history and latest status; read the latest relevant entries.
-- `docs/IMPLEMENTATION-FIX-PLAN.md` — documentation fixes, when available locally.
+- `docs/archive/documentation-fixes/IMPLEMENTATION-FIX-PLAN.md` — documentation fixes, when available locally.
 - `docs/IMPLEMENTATION-FIX-VALIDATION.md` — documentation acceptance results, when available locally.
 - `docs/VALIDATION.md` — validation requirements.
 - `docs/GITHUB-PAGES.md` — deployment constraints.
